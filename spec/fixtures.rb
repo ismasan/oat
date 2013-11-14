@@ -10,6 +10,7 @@ module Fixtures
         klass = self
 
         schema do
+          type 'user'
           link :self, href: url_for(item.id)
 
           property :id, item.id
@@ -22,6 +23,7 @@ module Fixtures
           entities :friends, item.friends, klass
 
           entity :manager, item.manager do |manager, s|
+            s.type 'manager'
             s.link :self, href: url_for(manager.id)
             s.properties do |attrs|
               attrs.name manager.name
