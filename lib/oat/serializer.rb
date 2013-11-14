@@ -2,7 +2,7 @@ require 'active_support/core_ext/class/attribute'
 module Oat
   class Serializer
 
-    class_attribute :_adapter
+    class_attribute :_adapter, :logger
 
     def self.schema(&block)
       @schema = block if block_given?
@@ -12,6 +12,10 @@ module Oat
     def self.adapter(adapter_class = nil)
       self._adapter = adapter_class if adapter_class
       self._adapter
+    end
+
+    def self.warn(msg)
+      logger ? logger.warning(msg) : puts(msg)
     end
 
     attr_reader :item, :context, :adapter_class, :adapter
@@ -31,7 +35,7 @@ module Oat
       if adapter.respond_to?(name)
         adapter.send(name, *args, &block)
       else
-        super
+        self.class.warn "[#{adapter.class}] does not implement ##{name}. Called with #{args}"
       end
     end
 
