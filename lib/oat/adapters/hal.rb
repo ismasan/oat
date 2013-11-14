@@ -1,3 +1,4 @@
+# http://stateless.co/hal_specification.html
 module Oat
   module Adapters
     class HAL < Oat::Adapter

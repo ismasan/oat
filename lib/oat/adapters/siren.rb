@@ -1,3 +1,4 @@
+# https://github.com/kevinswiber/siren
 module Oat
   module Adapters
     class Siren < Oat::Adapter
