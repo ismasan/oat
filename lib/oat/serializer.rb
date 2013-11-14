@@ -14,12 +14,13 @@ module Oat
       self._adapter
     end
 
-    attr_reader :item, :context, :adapter
+    attr_reader :item, :context, :adapter_class, :adapter
 
-    def initialize(item, context = nil, parent_serializer = nil)
+    def initialize(item, context = nil, _adapter_class = nil, parent_serializer = nil)
       @item, @context = item, context
       @parent_serializer = parent_serializer
-      @adapter = self.class.adapter.new(self)
+      @adapter_class = _adapter_class || self.class.adapter
+      @adapter = @adapter_class.new(self)
     end
 
     def top

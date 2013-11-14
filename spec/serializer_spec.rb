@@ -17,7 +17,7 @@ describe Oat::Serializer do
       end
     end
 
-    @serializer_class = Class.new(Oat::Serializer) do
+    @sc = Class.new(Oat::Serializer) do
 
       schema do
         attribute :id, item.id
@@ -34,7 +34,7 @@ describe Oat::Serializer do
       end
     end
 
-    @serializer_class.adapter @adapter_class
+    @sc.adapter @adapter_class
   end
 
   let(:user_class) do
@@ -49,7 +49,7 @@ describe Oat::Serializer do
 
   describe '#to_hash' do
     it 'builds Hash from item and context with attributes as defined in adapter' do
-      serializer = @serializer_class.new(user1, name: 'some_controller')
+      serializer = @sc.new(user1, name: 'some_controller')
       serializer.to_hash.tap do |h|
         h[:attributes][:id].should == user1.id
         h[:attributes][:name].should == user1.name

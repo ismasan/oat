@@ -25,11 +25,11 @@ module Oat
       if block_given?
         serializer_class = Class.new(serializer.class)
         serializer_class.adapter self.class
-        s = serializer_class.new(obj, serializer.context, serializer.top)
+        s = serializer_class.new(obj, serializer.context, serializer.adapter_class, serializer.top)
         serializer.top.instance_exec(obj, s, &block)
         s.to_hash
       else
-        serializer_class.new(obj, serializer.context).to_hash
+        serializer_class.new(obj, serializer.context, serializer.adapter_class).to_hash
       end
     end
   end

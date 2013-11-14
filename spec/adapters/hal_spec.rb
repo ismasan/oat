@@ -5,14 +5,11 @@ describe Oat::Adapters::HAL do
 
   include Fixtures
 
-  before do
-    serializer_class.adapter Oat::Adapters::HAL
-  end
+  subject{ serializer_class.new(user, {name: 'some_controller'}, Oat::Adapters::HAL) }
 
   describe '#to_hash' do
     it 'produces a HAL-compliant hash' do
-      serializer = serializer_class.new(user, {name: 'some_controller'})
-      serializer.to_hash.tap do |h|
+      subject.to_hash.tap do |h|
         # properties
         h[:id].should == user.id
         h[:name].should == user.name
