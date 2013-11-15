@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ismasan/oat.png)](https://travis-ci.org/ismasan/oat)
+
 # Oat
 
 Adapters-based API serializers with Hypermedia support for Ruby apps.
