@@ -133,7 +133,7 @@ class UserSerializer < Oat::Serializer
 end
 ```
 
-I the user serializer, `item` refers to the user instance being wrapped by the serializer.
+In the user serializer, `item` refers to the user instance being wrapped by the serializer.
 
 The bundled hypermedia adapters ship with an `entities` method to add arrays of entities, and an `entity` method to add a single entity.
 
