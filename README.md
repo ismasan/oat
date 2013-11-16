@@ -4,12 +4,16 @@ Adapters-based API serializers with Hypermedia support for Ruby apps.
 
 ## What
 
-Oat lets you design your API payloads succintingly while sticking to your media type of choice (hypermedia or not). 
-The details the media type are dealt with by pluggable adapters.
+Oat lets you design your API payloads succintingly while conforming to your *media type* of choice (hypermedia or not). 
+The details of the media type are dealt with by pluggable adapters.
+
+Oat ships with adapters for HAL, Siren and JsonAPI, and it's easy to write your own.
 
 ## Serializers
 
-You extend from [Oat::Serializer](https://github.com/ismasan/oat/blob/master/lib/oat/serializer.rb) to define your own resource serializers.
+A serializer describes one or more of your API's *entities*.
+
+You extend from [Oat::Serializer](https://github.com/ismasan/oat/blob/master/lib/oat/serializer.rb) to define your own serializers.
 
 ```ruby
 class ProductSerializer < Oat::Serializer
@@ -34,6 +38,14 @@ Then in your app (for example a Rails controller)
 product = Product.find(params[:id])
 render json: ProductSerializer.new(product)
 ```
+
+Serializers require a single object as argument, which can be a model instance, a presenter or any other domain object.
+
+The full serializer signature is `item`, `context`, `adapter_class`.
+
+* `item` a model or presenter instance. It is available in your serializer's schema as `item`.
+* `context` (optional) a context object or hash that is passed to the serializer and sub-serializers as the `context` variable. Useful if you need to pass request-specific data.
+* `adapter_class` (optional) A serializer's adapter can be configured at class-level or passed here to the initializer. Useful if you want to switch adapters based on request data. More on this below.
 
 ## Adapters
 
@@ -195,10 +207,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install oat
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
