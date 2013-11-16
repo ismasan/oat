@@ -135,6 +135,48 @@ end
 
 I the user serializer, `item` refers to the user instance being wrapped by the serializer.
 
+The bundled hypermedia adapters ship with an `entities` method to add arrays of entities, and an `entity` method to add a single entity.
+
+```ruby
+# single entity
+entity :child, item.child do |child, s|
+  s.name child.name
+  s.id child.id
+end
+
+# list of entities
+entities :children, item.children do |child, s|
+  s.name child.name
+  s.id child.id
+end
+```
+
+Both can be expressed using a separate serializer:
+
+```ruby
+# single entity
+entity :child, item.child, ChildSerializer
+
+# list of entities
+entities :children, item.children, ChildSerializer
+```
+
+The way sub-entities are rendered in the final payload is up to the adapter. In HAL the example above would be:
+
+```json
+{
+  ...,
+  "_embedded": {
+    "child": {"name": "child's name", "id": 1},
+    "children": [
+      {"name": "child 2 name", "id": 2},
+      {"name": "child 3 name", "id": 3},
+      ...
+    ]
+  }
+}
+```
+
 ## Sub-classing
 
 Serializers can be subclassed, for example if you want all your serializers to share the same adapter or add shared helper methods.
