@@ -186,13 +186,15 @@ You can take a look at [the built-in Hypermedia adapters](https://github.com/ism
 
 ## Switching adapters dinamically
 
-Adapters can also be passed as argument to serializer instances.
+Adapters can also be passed as an argument to serializer instances.
 
 ```ruby
 ProductSerializer.new(product, nil, Oat::Adapters::HAL)
 ```
 
 That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
+
+Not: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
 
 ## Installation
 
