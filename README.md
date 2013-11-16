@@ -87,7 +87,78 @@ At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specific
 
 ## Nested serializers
 
-TODO
+It's common for a media type to include "embedded" entities within a payload. For example an `account` entity may have many `users`. An Oat serializer can inline such relationships:
+
+```ruby
+class AccountSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    property :id, item.id
+    property :status, item.status
+    # user entities
+    entities :users, item.users do |user, user_serializer|
+      user_serializer.name user.name
+      user_serializer.email user.email
+    end
+  end
+end
+```
+
+Another, more reusable option is to use a nested serializer. Instead of a block, you pass another serializer class that will handle serializing `user` entities.
+
+```ruby
+class AccountSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    property :id, item.id
+    property :status, item.status
+    # user entities
+    entities :users, item.users, UserSerializer
+  end
+end
+```
+
+And the `UserSerializer` may look like this:
+
+```ruby
+class UserSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    property :name, item.name
+    property :email, item.name
+  end
+end
+```
+
+I the user serializer, `item` refers to the user instance being wrapped by the serializer.
+
+## Sub-classing
+
+Serializers can be subclassed, for example if you want all your serializers to share the same adapter or add shared helper methods.
+
+```ruby
+class MyAppSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  protected
+
+  def format_price(price)
+    Money.new(price, 'GBP').format
+  end
+end
+```
+
+```ruby
+class ProductSerializer < MyAppSerializer
+  schema do
+    property :title, item.title
+    property :price, format_price(item.price)
+  end
+end
+```
 
 ## Custom adapters.
 
