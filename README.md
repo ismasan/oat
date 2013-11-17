@@ -483,6 +483,12 @@ Or install it yourself as:
 
     $ gem install oat
 
+## TODO / contributions welcome
+
+* Siren actions.
+* JsonAPI URL and ID modes, top-level links
+* testing module that can be used for testing spec-compliance in user apps?
+
 ## Contributing
 
 1. Fork it
