@@ -19,6 +19,7 @@ describe Oat::Adapters::HAL do
         h[:_links][:self][:href].should == "http://foo.bar.com/#{user.id}"
         # embedded manager
         h[:_embedded][:manager].tap do |m|
+          m[:id].should == manager.id
           m[:name].should == manager.name
           m[:age].should  == manager.age
           m[:_links][:self][:href].should == "http://foo.bar.com/#{manager.id}"

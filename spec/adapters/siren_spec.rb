@@ -23,6 +23,7 @@ describe Oat::Adapters::Siren do
         # embedded manager
         h[:entities][1].tap do |m|
           m[:class].should == ['manager']
+          m[:properties][:id].should == manager.id
           m[:properties][:name].should == manager.name
           m[:properties][:age].should  == manager.age
           m[:links][0][:rel].should == [:self]

@@ -26,6 +26,7 @@ module Fixtures
             s.type 'manager'
             s.link :self, href: url_for(manager.id)
             s.properties do |attrs|
+              attrs.id manager.id
               attrs.name manager.name
               attrs.age manager.age
             end
