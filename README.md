@@ -273,7 +273,7 @@ class ProductSerializer < Oat::Serializer
 end
 ```
 
-In fraeworks like Rails, you'll probably want to use the URL helpers created by the `routes.rb` file. Two options:
+In frameworks like Rails, you'll probably want to use the URL helpers created by the `routes.rb` file. Two options:
 
 ### Pass a context object to serializers
 
