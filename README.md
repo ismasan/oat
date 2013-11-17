@@ -202,13 +202,84 @@ class ProductSerializer < MyAppSerializer
 end
 ```
 
+This is useful if you want your serializers to better express your app's domain. For example a serializer for a social app:
+
+```ruby
+class UserSerializer < SocialSerializer
+  schema do
+    name item.name
+    email item.email
+    # friend entities
+    friends item.friends
+  end
+end
+```
+
+The superclass defines the methods `name`, `email` and `friends`, which in turn delegate to the adapter's setters.
+
+```ruby
+class SocialSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL # or whatever
+
+  # friendly setters
+  protected
+
+  def name(value)
+    property :name, value
+  end
+
+  def email(value)
+    property :email, value
+  end
+
+  def friends(objects)
+    entities :friends, objects, FriendSerializer
+  end
+end
+```
+
 ## Custom adapters.
 
-Adapters let you simplify your API payload design by making it more domain specific.
+An adapter's primary concern is to abstract away the details of specific media types.
+
+Methods defined in an adapter are exposed as `schema` setters in your serializers. 
+Ideally different adapters should expose the same methods so your serializers can switch adapters without loosing compatibility. For example all bundled adapters expose the following methods:
+
+* `type` The type of the entity. Renders as "class" in Siren, root node name in JsonAPI, not used in HAL.
+* `link` Add a link with `rel` and `href`. Renders inside "_links" in HAL, "links" in Siren and JsonAP.
+* `property` Add a property to the entity. Top level attributes in HAL and JsonAPI, "properties" node in Siren.
+* `properties` Yield a properties object to set many properties at once.
+* `entity` Add a single sub-entity. "_embedded" node in HAL, "entities" in Siren, "linked" in JsonAPI.
+* `entities` Add a collection of sub-entities.
+
+You can define these in your own custom adapters if you're using your own media type or need to implement a different spec.
+
+```ruby
+class CustomAdapter < Oat::Adapter
+
+  def type(*types)
+    data[:rel] = types
+  end
+
+  def property(name, value)
+    data[:attr][name] = value
+  end
+
+  def entity(name, obj, serializer_class = nil, &block)
+    data[:nested_documents] = serializer_from_block_or_class(obj, serializer_class, &block)
+  end
+
+  ... etc
+end
+```
 
 An adapter class provides a `data` object (just a Hash) that stores your data in the structure you want. An adapter's public methods are exposed to your serializers.
 
-Let's say you're building a social API and want your payload definitions to express the concept of "friendship". You want your serializers to look like:
+## Unconventional or domain specific adapters
+
+Although adapters should in general comply with a common interface, you can still create your own domain-specific adapters if you need to.
+
+Let's say you're working on a media-type specification specializing in describing social networks and want your payload definitions to express the concept of "friendship". You want your serializers to look like:
 
 ```ruby
 class UserSerializer < Oat::Serializer
