@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Oat::VERSION
   spec.authors       = ["Ismael Celis"]
   spec.email         = ["ismaelct@gmail.com"]
-  spec.description   = %q{Adapters-based serializers with Hypermedia support}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Oat helps you separate your API schema definitions from the underlying media type. Media types can be plugged or swapped on demand globally or on the content-negotiation phase}
+  spec.summary       = %q{Adapters-based serializers with Hypermedia support}
   spec.homepage      = ""
   spec.license       = "MIT"
 
