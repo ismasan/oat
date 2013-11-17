@@ -85,6 +85,18 @@ adapter Oat::Adapters::Siren
 ```
 At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specification.html), [Siren](https://github.com/kevinswiber/siren) and [JsonAPI](http://jsonapi.org/), but it's easy to write your own.
 
+## Switching adapters dinamically
+
+Adapters can also be passed as an argument to serializer instances.
+
+```ruby
+ProductSerializer.new(product, nil, Oat::Adapters::HAL)
+```
+
+That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
+
+Not: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
+
 ## Nested serializers
 
 It's common for a media type to include "embedded" entities within a payload. For example an `account` entity may have many `users`. An Oat serializer can inline such relationships:
@@ -238,6 +250,95 @@ class SocialSerializer < Oat::Serializer
 end
 ```
 
+## URLs
+
+Hypermedia is all about the URLs linking your resources together. Oat dapaters can have methods to declare links in your entity schemas but it's up to your code/framework how to create those links.
+A simple stand-alone implementation could be:
+
+```ruby
+class ProductSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    link :self, href: product_url(item.id)
+    ...
+  end
+
+  protected
+  
+  # helper URL method
+  def product_url(id)
+    "https://api.com/products/#{id}"
+  end
+end
+```
+
+In fraeworks like Rails, you'll probably want to use the URL helpers created by the `routes.rb` file. Two options:
+
+### Pass a context object to serializers
+
+You can pass a context object as second argument to serializers. This object will be passed to nested serializers too. For example, you can pass the controller instance itself.
+
+```ruby
+# users_controller.rb
+
+def show
+  user = User.find(params[:id])
+  render json: UserSerializer.new(user, self)
+end
+```
+
+Then, in the `UserSerializer`:
+```ruby
+class ProductSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    # `context` is the controller, which responds to URL helpers.
+    link :self, href: context.product_url(item)
+    ...
+  end
+end
+```
+
+### Mixin Rails' routing module
+
+ALternatively, you can mixin Rails routing helpers directly into your serializers.
+
+```ruby
+class MyAppParentSerializer < Oat::Serializer
+  include ActionDispatch::Routing::UrlFor
+  include Rails.application.routes.url_helpers
+  def self.default_url_options
+    Rails.application.routes.default_url_options
+  end
+
+  adapter Oat::Adapters::HAL
+end
+```
+
+Then your serializer sub-classes can just use the URL helpers
+
+```ruby
+class ProductSerializer < MyAppParentSerializer
+  schema do
+    # `product_url` is mixed in from Rails' routing system.
+    link :self, href: product_url(item)
+    ...
+  end
+end
+```
+
+However, since serializers don't have access to the current request, for this to work you must configure each environment's base host. In `config/environments/production.rb`:
+
+```ruby
+config.after_initialize do
+  Rails.application.routes.default_url_options[:host] = 'api.com'
+end
+```
+
+NOTE: Rails URL helpers could be handled by a separate oat-rails gem.
+
 ## Custom adapters.
 
 An adapter's primary concern is to abstract away the details of specific media types.
@@ -367,18 +468,6 @@ The result for the SocialHalAdapter is:
 ```
 
 You can take a look at [the built-in Hypermedia adapters](https://github.com/ismasan/oat/tree/master/lib/oat/adapters) for guidance.
-
-## Switching adapters dinamically
-
-Adapters can also be passed as an argument to serializer instances.
-
-```ruby
-ProductSerializer.new(product, nil, Oat::Adapters::HAL)
-```
-
-That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
-
-Not: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
 
 ## Installation
 
