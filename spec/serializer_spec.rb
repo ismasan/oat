@@ -20,6 +20,7 @@ describe Oat::Serializer do
     @sc = Class.new(Oat::Serializer) do
 
       schema do
+        my_attribute 'Hello'
         attribute :id, item.id
         attributes do |attrs|
           attrs.name item.name
@@ -31,6 +32,10 @@ describe Oat::Serializer do
 
       def url_for(id)
         "http://foo.bar.com/#{id}"
+      end
+
+      def my_attribute(value)
+        attribute :special, value
       end
     end
 
@@ -51,6 +56,7 @@ describe Oat::Serializer do
     it 'builds Hash from item and context with attributes as defined in adapter' do
       serializer = @sc.new(user1, name: 'some_controller')
       serializer.to_hash.tap do |h|
+        h[:attributes][:special].should == 'Hello'
         h[:attributes][:id].should == user1.id
         h[:attributes][:name].should == user1.name
         h[:attributes][:age].should == user1.age
