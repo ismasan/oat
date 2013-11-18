@@ -39,6 +39,10 @@ module Oat
       end
     end
 
+    def respond_to_missing?(method_name, include_private = false)
+      adapter.respond_to? method_name
+    end
+
     def to_hash
       @to_hash ||= (
         self.instance_eval &self.class.schema
