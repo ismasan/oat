@@ -4,7 +4,7 @@ Adapters-based API serializers with Hypermedia support for Ruby apps.
 
 ## What
 
-Oat lets you design your API payloads succintingly while conforming to your *media type* of choice (hypermedia or not). 
+Oat lets you design your API payloads succinctly while conforming to your *media type* of choice (hypermedia or not). 
 The details of the media type are dealt with by pluggable adapters.
 
 Oat ships with adapters for HAL, Siren and JsonAPI, and it's easy to write your own.
@@ -85,7 +85,7 @@ adapter Oat::Adapters::Siren
 ```
 At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specification.html), [Siren](https://github.com/kevinswiber/siren) and [JsonAPI](http://jsonapi.org/), but it's easy to write your own.
 
-## Switching adapters dinamically
+## Switching adapters dynamically
 
 Adapters can also be passed as an argument to serializer instances.
 
@@ -95,7 +95,7 @@ ProductSerializer.new(product, nil, Oat::Adapters::HAL)
 
 That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
 
-Not: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
+Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
 
 ## Nested serializers
 
@@ -189,7 +189,7 @@ The way sub-entities are rendered in the final payload is up to the adapter. In 
 }
 ```
 
-## Sub-classing
+## Subclassing
 
 Serializers can be subclassed, for example if you want all your serializers to share the same adapter or add shared helper methods.
 
@@ -214,7 +214,7 @@ class ProductSerializer < MyAppSerializer
 end
 ```
 
-This is useful if you want your serializers to better express your app's domain. For example a serializer for a social app:
+This is useful if you want your serializers to better express your app's domain. For example, a serializer for a social app:
 
 ```ruby
 class UserSerializer < SocialSerializer
@@ -252,7 +252,7 @@ end
 
 ## URLs
 
-Hypermedia is all about the URLs linking your resources together. Oat dapaters can have methods to declare links in your entity schemas but it's up to your code/framework how to create those links.
+Hypermedia is all about the URLs linking your resources together. Oat adapters can have methods to declare links in your entity schemae but it's up to your code/framework how to create those links.
 A simple stand-alone implementation could be:
 
 ```ruby
@@ -303,7 +303,7 @@ end
 
 ### Mixin Rails' routing module
 
-ALternatively, you can mixin Rails routing helpers directly into your serializers.
+Alternatively, you can mix in Rails routing helpers directly into your serializers.
 
 ```ruby
 class MyAppParentSerializer < Oat::Serializer
