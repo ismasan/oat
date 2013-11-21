@@ -1,6 +1,6 @@
 # Oat [![Build Status](https://travis-ci.org/ismasan/oat.png)](https://travis-ci.org/ismasan/oat)
 
-Adapters-based API serializers with Hypermedia support for Ruby apps.
+Adapters-based API serializers with Hypermedia support for Ruby apps. Read [the blog post](http://new-bamboo.co.uk/blog/2013/11/21/oat-explicit-media-type-serializers-in-ruby) for context and motivation.
 
 ## What
 
