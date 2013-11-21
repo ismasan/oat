@@ -264,7 +264,7 @@ end
 
 ## URLs
 
-Hypermedia is all about the URLs linking your resources together. Oat adapters can have methods to declare links in your entity schemae but it's up to your code/framework how to create those links.
+Hypermedia is all about the URLs linking your resources together. Oat adapters can have methods to declare links in your entity schema but it's up to your code/framework how to create those links.
 A simple stand-alone implementation could be:
 
 ```ruby
