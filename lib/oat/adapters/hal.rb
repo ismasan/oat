@@ -15,7 +15,7 @@ module Oat
       end
 
       def entity(name, obj, serializer_class = nil, &block)
-        data[:_embedded][name] = serializer_from_block_or_class(obj, serializer_class, &block)
+        data[:_embedded][name] = obj ? serializer_from_block_or_class(obj, serializer_class, &block) : nil
       end
 
       def entities(name, collection, serializer_class = nil, &block)

@@ -26,9 +26,12 @@ module Oat
       end
 
       def entity(name, obj, serializer_class = nil, &block)
+        @entities[name.to_s.pluralize.to_sym] ||= []
         ent = entity_without_root(obj, serializer_class, &block)
-        link name, href: ent[:id]
-        (@entities[name.to_s.pluralize.to_sym] ||= []) << ent
+        if ent
+          link name, href: ent[:id]
+          @entities[name.to_s.pluralize.to_sym] << ent
+        end
       end
 
       def entities(name, collection, serializer_class = nil, &block)
@@ -36,9 +39,12 @@ module Oat
         data[:links][link_name] = []
 
         collection.each do |obj|
+          @entities[link_name] ||= []
           ent = entity_without_root(obj, serializer_class, &block)
-          data[:links][link_name] << ent[:id]
-          (@entities[link_name] ||= []) << ent
+          if ent
+            data[:links][link_name] << ent[:id]
+            @entities[link_name] << ent
+          end
         end
       end
 
@@ -54,7 +60,7 @@ module Oat
       attr_reader :root_name
 
       def entity_without_root(obj, serializer_class = nil, &block)
-        serializer_from_block_or_class(obj, serializer_class, &block).values.first.first
+        obj ? serializer_from_block_or_class(obj, serializer_class, &block).values.first.first : nil
       end
 
     end
