@@ -60,7 +60,7 @@ module Oat
       attr_reader :root_name
 
       def entity_without_root(obj, serializer_class = nil, &block)
-        obj ? serializer_from_block_or_class(obj, serializer_class, &block).values.first.first : nil
+        serializer_from_block_or_class(obj, serializer_class, &block).values.first.first
       end
 
     end

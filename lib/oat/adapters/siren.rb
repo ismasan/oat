@@ -26,7 +26,7 @@ module Oat
       end
 
       def entity(name, obj, serializer_class = nil, &block)
-        ent = obj ? serializer_from_block_or_class(obj, serializer_class, &block) : nil
+        ent = serializer_from_block_or_class(obj, serializer_class, &block)
         data[:entities] << ent
       end
 

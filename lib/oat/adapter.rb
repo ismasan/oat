@@ -22,6 +22,8 @@ module Oat
     end
 
     def serializer_from_block_or_class(obj, serializer_class = nil, &block)
+      return nil if obj.nil?
+
       if block_given?
         serializer_class = Class.new(serializer.class)
         serializer_class.adapter self.class
