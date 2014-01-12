@@ -7,6 +7,7 @@ module Oat
         super
         data[:links] = []
         data[:entities] = []
+        data[:actions] = []
       end
 
       def type(*types)
@@ -32,6 +33,52 @@ module Oat
       def entities(name, collection, serializer_class = nil, &block)
         collection.each do |obj|
           entity name, obj, serializer_class, &block
+        end
+      end
+
+      def action(name, &block)
+        action = Action.new(name)
+        block.call(action)
+
+        data[:actions] << action.data
+      end
+
+      class Action
+        attr_reader :data
+
+        def initialize(name)
+          @data = { name: name, class: [], fields: [] }
+        end
+
+        def class(value)
+          data[:class] << value
+        end
+
+        def field(name, &block)
+          field = Field.new(name)
+          block.call(field)
+
+          data[:fields] << field.data
+        end
+
+        %w(href method title).each do |attribute|
+          define_method(attribute) do |value|
+            data[attribute.to_sym] = value
+          end
+        end
+
+        class Field
+          attr_reader :data
+
+          def initialize(name)
+            @data = { name: name }
+          end
+
+          %w(type value).each do |attribute|
+            define_method(attribute) do |value|
+              data[attribute.to_sym] = value
+            end
+          end
         end
       end
 
