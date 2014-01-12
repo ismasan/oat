@@ -31,6 +31,16 @@ module Fixtures
               attrs.age manager.age
             end
           end if item.manager
+
+          action :close_account do |action|
+            action.href "http://foo.bar.com/#{item.id}/close_account"
+            action.class 'danger'
+            action.class 'irreversible'
+            action.method 'DELETE'
+            action.field :current_password do |field|
+              field.type :password
+            end
+          end
         end
 
         def url_for(id)

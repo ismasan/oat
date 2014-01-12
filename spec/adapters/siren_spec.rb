@@ -39,6 +39,17 @@ describe Oat::Adapters::Siren do
           f[:links][0][:rel].should == [:self]
           f[:links][0][:href].should == "http://foo.bar.com/#{friend.id}"
         end
+        # action close_account
+        h[:actions][0].tap do |a|
+          a[:name].should == :close_account
+          a[:href].should == "http://foo.bar.com/#{user.id}/close_account"
+          a[:class].should == ['danger', 'irreversible']
+          a[:method].should == 'DELETE'
+          a[:fields][0].tap do |f|
+            f[:name].should == :current_password
+            f[:type].should == :password
+          end
+        end
       end
     end
   end
