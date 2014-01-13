@@ -1,5 +1,5 @@
 module Fixtures
-  
+
   def self.included(base)
     base.let(:user_class) { Struct.new(:name, :age, :id, :friends, :manager) }
     base.let(:friend) { user_class.new('Joe', 33, 2, []) }
@@ -30,7 +30,7 @@ module Fixtures
               attrs.name manager.name
               attrs.age manager.age
             end
-          end if item.manager
+          end
         end
 
         def url_for(id)
