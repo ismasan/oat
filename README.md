@@ -4,7 +4,7 @@ Adapters-based API serializers with Hypermedia support for Ruby apps. Read [the 
 
 ## What
 
-Oat lets you design your API payloads succinctly while conforming to your *media type* of choice (hypermedia or not). 
+Oat lets you design your API payloads succinctly while conforming to your *media type* of choice (hypermedia or not).
 The details of the media type are dealt with by pluggable adapters.
 
 Oat ships with adapters for HAL, Siren and JsonAPI, and it's easy to write your own.
@@ -23,6 +23,9 @@ class ProductSerializer < Oat::Serializer
   schema do
     type "product"
     link :self, href: product_url(item)
+
+    map_properties :id, :created_at, :updated_at
+
     properties do |props|
       props.title item.title
       props.price item.price
@@ -277,7 +280,7 @@ class ProductSerializer < Oat::Serializer
   end
 
   protected
-  
+
   # helper URL method
   def product_url(id)
     "https://api.com/products/#{id}"
@@ -355,7 +358,7 @@ NOTE: Rails URL helpers could be handled by a separate oat-rails gem.
 
 An adapter's primary concern is to abstract away the details of specific media types.
 
-Methods defined in an adapter are exposed as `schema` setters in your serializers. 
+Methods defined in an adapter are exposed as `schema` setters in your serializers.
 Ideally different adapters should expose the same methods so your serializers can switch adapters without loosing compatibility. For example all bundled adapters expose the following methods:
 
 * `type` The type of the entity. Renders as "class" in Siren, root node name in JsonAPI, not used in HAL.
