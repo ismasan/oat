@@ -1,5 +1,5 @@
 module Fixtures
-  
+
   def self.included(base)
     base.let(:user_class) { Struct.new(:name, :age, :id, :friends, :manager) }
     base.let(:friend) { user_class.new('Joe', 33, 2, []) }
@@ -14,9 +14,8 @@ module Fixtures
           link :self, href: url_for(item.id)
 
           property :id, item.id
+          map_properties :name, :age
           properties do |attrs|
-            attrs.name item.name
-            attrs.age item.age
             attrs.controller_name context[:name]
           end
 
