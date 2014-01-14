@@ -560,7 +560,6 @@ Or install it yourself as:
 
 ## TODO / contributions welcome
 
-* Siren actions.
 * JsonAPI URL and ID modes, top-level links
 * testing module that can be used for testing spec-compliance in user apps?
 
@@ -571,3 +570,7 @@ Or install it yourself as:
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Contributors
+
+Many thanks to all contributors! https://github.com/ismasan/oat/graphs/contributors
