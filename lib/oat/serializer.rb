@@ -50,5 +50,14 @@ module Oat
       )
     end
 
+    def map_properties(*args)
+      args.each { |name| map_property name }
+    end
+
+    def map_property(name)
+      value = item.send(name)
+      property name, value
+    end
+
   end
 end

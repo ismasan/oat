@@ -14,9 +14,8 @@ module Fixtures
           link :self, href: url_for(item.id)
 
           property :id, item.id
+          map_properties :name, :age
           properties do |attrs|
-            attrs.name item.name
-            attrs.age item.age
             attrs.controller_name context[:name]
           end
 

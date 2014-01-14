@@ -4,7 +4,7 @@ Adapters-based API serializers with Hypermedia support for Ruby apps. Read [the 
 
 ## What
 
-Oat lets you design your API payloads succinctly while conforming to your *media type* of choice (hypermedia or not). 
+Oat lets you design your API payloads succinctly while conforming to your *media type* of choice (hypermedia or not).
 The details of the media type are dealt with by pluggable adapters.
 
 Oat ships with adapters for HAL, Siren and JsonAPI, and it's easy to write your own.
@@ -23,6 +23,7 @@ class ProductSerializer < Oat::Serializer
   schema do
     type "product"
     link :self, href: product_url(item)
+
     properties do |props|
       props.title item.title
       props.price item.price
@@ -47,6 +48,68 @@ The full serializer signature is `item`, `context`, `adapter_class`.
 * `item` a model or presenter instance. It is available in your serializer's schema as `item`.
 * `context` (optional) a context object or hash that is passed to the serializer and sub-serializers as the `context` variable. Useful if you need to pass request-specific data.
 * `adapter_class` (optional) A serializer's adapter can be configured at class-level or passed here to the initializer. Useful if you want to switch adapters based on request data. More on this below.
+
+### Defining Properties
+
+There are a few different ways of defining properties on a serializer.
+
+Properties can be added explicitly using `property`. In this case, you can map an arbitrary value to an arbitrary key:
+
+```ruby
+require 'oat/adapters/hal'
+class ProductSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    type "product"
+    link :self, href: product_url(item)
+
+    property :title, item.title
+    property :price, item.price
+    property :description, item.blurb
+    property :the_number_one, 1
+  end
+end
+```
+
+Similarly, properties can be added within a block using `properties` to be more concise or make the code more readable. Again, these will set arbitrary values for arbitrary keys:
+
+```ruby
+require 'oat/adapters/hal'
+class ProductSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    type "product"
+    link :self, href: product_url(item)
+
+    properties do |p|
+      p.title           item.title
+      p.price           item.price
+      p.description     item.blurb
+      p.the_number_one  1
+    end
+  end
+end
+```
+
+In many cases, you will want to simply map the properties of `item` to a property in the serializer. This can be easily done using `map_properties`. This method takes a list of method or attribute names to which `item` will respond. Note that you cannot assign arbitrary values and keys using `map_properties` - the serializer will simply add a key and call that method on `item` to assign the value.
+
+```ruby
+require 'oat/adapters/hal'
+class ProductSerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    type "product"
+    link :self, href: product_url(item)
+
+    map_properties :title, :price
+    property :description, item.blurb
+    property :the_number_one, 1
+  end
+end
+```
 
 ## Adapters
 
@@ -277,7 +340,7 @@ class ProductSerializer < Oat::Serializer
   end
 
   protected
-  
+
   # helper URL method
   def product_url(id)
     "https://api.com/products/#{id}"
@@ -355,7 +418,7 @@ NOTE: Rails URL helpers could be handled by a separate oat-rails gem.
 
 An adapter's primary concern is to abstract away the details of specific media types.
 
-Methods defined in an adapter are exposed as `schema` setters in your serializers. 
+Methods defined in an adapter are exposed as `schema` setters in your serializers.
 Ideally different adapters should expose the same methods so your serializers can switch adapters without loosing compatibility. For example all bundled adapters expose the following methods:
 
 * `type` The type of the entity. Renders as "class" in Siren, root node name in JsonAPI, not used in HAL.
