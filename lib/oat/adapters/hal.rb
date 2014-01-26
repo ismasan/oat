@@ -3,7 +3,7 @@ module Oat
   module Adapters
     class HAL < Oat::Adapter
       def link(rel, opts = {})
-        data[:_links][rel] = opts
+        data[:_links][rel] = opts if opts[:href]
       end
 
       def properties(&block)

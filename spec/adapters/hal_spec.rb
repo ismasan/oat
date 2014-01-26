@@ -17,6 +17,8 @@ describe Oat::Adapters::HAL do
         h[:controller_name].should == 'some_controller'
         # links
         h[:_links][:self][:href].should == "http://foo.bar.com/#{user.id}"
+        # HAL Spec says href is REQUIRED
+        h[:_links].should_not include(:empty)
         # embedded manager
         h[:_embedded][:manager].tap do |m|
           m[:id].should == manager.id

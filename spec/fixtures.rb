@@ -12,6 +12,7 @@ module Fixtures
         schema do
           type 'user'
           link :self, href: url_for(item.id)
+          link :empty, href: nil
 
           property :id, item.id
           map_properties :name, :age
