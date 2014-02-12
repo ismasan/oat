@@ -1,5 +1,12 @@
 # http://jsonapi.org/format/#url-based-json-api
+require 'active_support/inflector'
 require 'active_support/core_ext/string/inflections'
+unless defined?(String.new.pluralize)
+  class String
+    include ActiveSupport::CoreExtensions::String::Inflections
+  end
+end
+
 module Oat
   module Adapters
     class JsonAPI < Oat::Adapter
