@@ -15,7 +15,7 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links] << {rel: [rel]}.merge(opts)
+        data[:links] << {:rel => [rel]}.merge(opts)
       end
 
       def properties(&block)
@@ -48,7 +48,7 @@ module Oat
         attr_reader :data
 
         def initialize(name)
-          @data = { name: name, class: [], fields: [] }
+          @data = { :name => name, :class => [], :fields => [] }
         end
 
         def class(value)
@@ -72,7 +72,7 @@ module Oat
           attr_reader :data
 
           def initialize(name)
-            @data = { name: name }
+            @data = { :name => name }
           end
 
           %w(type value).each do |attribute|

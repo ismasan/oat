@@ -1,8 +1,12 @@
 module Oat
-  class Props < BasicObject
+  class Props
 
     def initialize
       @attributes = {}
+    end
+
+    def id(value)
+      @attributes[:id] = value
     end
 
     def _from(data)

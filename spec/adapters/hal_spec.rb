@@ -5,7 +5,7 @@ describe Oat::Adapters::HAL do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {name: 'some_controller'}, Oat::Adapters::HAL) }
+  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::HAL) }
 
   describe '#to_hash' do
     it 'produces a HAL-compliant hash' do

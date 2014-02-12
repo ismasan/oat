@@ -54,7 +54,7 @@ describe Oat::Serializer do
 
   describe '#to_hash' do
     it 'builds Hash from item and context with attributes as defined in adapter' do
-      serializer = @sc.new(user1, name: 'some_controller')
+      serializer = @sc.new(user1, :name => 'some_controller')
       serializer.to_hash.tap do |h|
         h[:attributes][:special].should == 'Hello'
         h[:attributes][:id].should == user1.id
