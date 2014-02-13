@@ -5,63 +5,74 @@ describe Oat::Adapters::HAL do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::HAL) }
+  let(:serializer) { serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::HAL) }
+  let(:hash) { serializer.to_hash }
 
   describe '#to_hash' do
     it 'produces a HAL-compliant hash' do
-      subject.to_hash.tap do |h|
+      expect(hash).to include(
         # properties
-        h[:id].should == user.id
-        h[:name].should == user.name
-        h[:age].should == user.age
-        h[:controller_name].should == 'some_controller'
-        # links
-        h[:_links][:self][:href].should == "http://foo.bar.com/#{user.id}"
-        # HAL Spec says href is REQUIRED
-        h[:_links].should_not include(:empty)
-        # embedded manager
-        h[:_embedded][:manager].tap do |m|
-          m[:id].should == manager.id
-          m[:name].should == manager.name
-          m[:age].should  == manager.age
-          m[:_links][:self][:href].should == "http://foo.bar.com/#{manager.id}"
-        end
-        # embedded friends
-        h[:_embedded][:friends].size.should == 1
-        h[:_embedded][:friends][0].tap do |f|
-          f[:id].should == friend.id
-          f[:name].should == friend.name
-          f[:age].should == friend.age
-          f[:controller_name].should == 'some_controller'
-          f[:_links][:self][:href].should == "http://foo.bar.com/#{friend.id}"
-        end
-      end
+        :id => user.id,
+        :name => user.name,
+        :age => user.age,
+        :controller_name => 'some_controller'
+      )
+
+      # links
+      expect(hash.fetch(:_links)).to include(:self => { :href => "http://foo.bar.com/#{user.id}" })
+
+      # HAL Spec says href is REQUIRED
+      expect(hash.fetch(:_links)).not_to include(:empty)
+      expect(hash.fetch(:_embedded)).to include(:manager, :friends)
+
+      # embedded manager
+      expect(hash.fetch(:_embedded).fetch(:manager)).to include(
+        :id => manager.id,
+        :name => manager.name,
+        :age => manager.age,
+        :_links => { :self => { :href => "http://foo.bar.com/#{manager.id}" } }
+      )
+
+      # embedded friends
+      expect(hash.fetch(:_embedded).fetch(:friends).size).to be 1
+      expect(hash.fetch(:_embedded).fetch(:friends).first).to include(
+        :id => friend.id,
+        :name => friend.name,
+        :age => friend.age,
+        :controller_name => 'some_controller',
+        :_links => { :self => { :href => "http://foo.bar.com/#{friend.id}" } }
+      )
     end
 
     context 'with a nil entity relationship' do
       let(:manager) { nil }
 
       it 'produces a HAL-compliant hash' do
-        subject.to_hash.tap do |h|
-          # properties
-          h[:id].should == user.id
-          h[:name].should == user.name
-          h[:age].should == user.age
-          h[:controller_name].should == 'some_controller'
-          # links
-          h[:_links][:self][:href].should == "http://foo.bar.com/#{user.id}"
-          # embedded manager
-          h[:_embedded].fetch(:manager).should be_nil
-          # embedded friends
-          h[:_embedded][:friends].size.should == 1
-          h[:_embedded][:friends][0].tap do |f|
-            f[:id].should == friend.id
-            f[:name].should == friend.name
-            f[:age].should == friend.age
-            f[:controller_name].should == 'some_controller'
-            f[:_links][:self][:href].should == "http://foo.bar.com/#{friend.id}"
-          end
-        end
+        # properties
+        expect(hash).to include(
+          :id => user.id,
+          :name => user.name,
+          :age => user.age,
+          :controller_name => 'some_controller'
+        )
+
+        expect(hash.fetch(:_links)).to include(:self => { :href => "http://foo.bar.com/#{user.id}" })
+
+        # HAL Spec says href is REQUIRED
+        expect(hash.fetch(:_links)).not_to include(:empty)
+        expect(hash.fetch(:_embedded)).to include(:manager, :friends)
+
+        expect(hash.fetch(:_embedded).fetch(:manager)).to be_nil
+
+        # embedded friends
+        expect(hash.fetch(:_embedded).fetch(:friends).size).to be 1
+        expect(hash.fetch(:_embedded).fetch(:friends).first).to include(
+          :id => friend.id,
+          :name => friend.name,
+          :age => friend.age,
+          :controller_name => 'some_controller',
+          :_links => { :self => { :href => "http://foo.bar.com/#{friend.id}" } }
+        )
       end
     end
   end

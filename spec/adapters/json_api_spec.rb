@@ -5,69 +5,91 @@ describe Oat::Adapters::JsonAPI do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::JsonAPI) }
+  let(:serializer) { serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::JsonAPI) }
+  let(:hash) { serializer.to_hash }
 
   describe '#to_hash' do
     it 'produces a JSON-API compliant hash' do
-      payload = subject.to_hash
       # embedded friends
-      payload[:linked][:friends][0].tap do |f|
-        f[:id].should == friend.id
-        f[:name].should == friend.name
-        f[:age].should == friend.age
-        f[:controller_name].should == 'some_controller'
-        f[:links][:self].should == "http://foo.bar.com/#{friend.id}"
-      end
+      linked_friends = hash.fetch(:linked).fetch(:friends)
+      expect(linked_friends.size).to be 1
+      expect(linked_friends.first).to include(
+        :id => friend.id,
+        :name => friend.name,
+        :age => friend.age,
+        :controller_name => 'some_controller'
+      )
+
+      expect(linked_friends.first.fetch(:links)).to include(
+        :self => "http://foo.bar.com/#{friend.id}",
+        :empty => nil,
+        :friends => []
+      )
 
       # embedded manager
-      payload[:linked][:managers][0].tap do |m|
-        m[:id].should == manager.id
-        m[:name].should == manager.name
-        m[:age].should  == manager.age
-        m[:links][:self].should == "http://foo.bar.com/#{manager.id}"
-      end
+      linked_managers = hash.fetch(:linked).fetch(:managers)
+      expect(linked_managers.size).to be 1
+      expect(linked_managers.first).to include(
+        :id => manager.id,
+        :name => manager.name,
+        :age => manager.age,
+        :links => { :self => "http://foo.bar.com/#{manager.id}" }
+      )
 
-      payload[:users][0].tap do |h|
-        h[:id].should == user.id
-        h[:name].should == user.name
-        h[:age].should == user.age
-        h[:controller_name].should == 'some_controller'
-        # links
-        h[:links][:self].should == "http://foo.bar.com/#{user.id}"
+      users = hash.fetch(:users)
+      expect(users.size).to be 1
+      expect(users.first).to include(
+        :id => user.id,
+        :name => user.name,
+        :age => user.age,
+        :controller_name => 'some_controller',
+      )
+
+      expect(users.first.fetch(:links)).to include(
+        :self => "http://foo.bar.com/#{user.id}",
         # these links are added by embedding entities
-        h[:links][:manager].should == manager.id
-        h[:links][:friends].should == [friend.id]
-      end
+        :manager => manager.id,
+        :friends => [friend.id]
+      )
     end
 
     context 'with a nil entity relationship' do
       let(:manager) { nil }
 
       it 'produces a JSON-API compliant hash' do
-        payload = subject.to_hash
         # embedded friends
-        payload[:linked][:friends][0].tap do |f|
-          f[:id].should == friend.id
-          f[:name].should == friend.name
-          f[:age].should == friend.age
-          f[:controller_name].should == 'some_controller'
-          f[:links][:self].should == "http://foo.bar.com/#{friend.id}"
-        end
+        linked_friends = hash.fetch(:linked).fetch(:friends)
+        expect(linked_friends.size).to be 1
+        expect(linked_friends.first).to include(
+          :id => friend.id,
+          :name => friend.name,
+          :age => friend.age,
+          :controller_name => 'some_controller'
+        )
+
+        expect(linked_friends.first.fetch(:links)).to include(
+          :self => "http://foo.bar.com/#{friend.id}",
+          :empty => nil,
+          :friends => []
+        )
 
         # embedded manager
-        payload[:linked].fetch(:managers).should be_empty
+        hash.fetch(:linked).fetch(:managers).should be_empty
 
-        payload[:users][0].tap do |h|
-          h[:id].should == user.id
-          h[:name].should == user.name
-          h[:age].should == user.age
-          h[:controller_name].should == 'some_controller'
-          # links
-          h[:links][:self].should == "http://foo.bar.com/#{user.id}"
+        users = hash.fetch(:users)
+        expect(users.size).to be 1
+        expect(users.first).to include(
+          :id => user.id,
+          :name => user.name,
+          :age => user.age,
+          :controller_name => 'some_controller',
+        )
+        expect(users.first.fetch(:links)).not_to include(:manager)
+        expect(users.first.fetch(:links)).to include(
+          :self => "http://foo.bar.com/#{user.id}",
           # these links are added by embedding entities
-          h[:links].should_not include(:manager)
-          h[:links][:friends].should == [friend.id]
-        end
+          :friends => [friend.id]
+        )
       end
     end
   end
