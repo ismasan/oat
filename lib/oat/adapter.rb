@@ -29,9 +29,9 @@ module Oat
         serializer_class.adapter self.class
         s = serializer_class.new(obj, serializer.context, serializer.adapter_class, serializer.top)
         serializer.top.instance_exec(obj, s, &block)
-        s.to_hash
+        s
       else
-        serializer_class.new(obj, serializer.context, serializer.adapter_class).to_hash
+        serializer_class.new(obj, serializer.context, serializer.adapter_class)
       end
     end
   end

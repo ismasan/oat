@@ -61,7 +61,7 @@ module Oat
 
       def entity_without_root(obj, serializer_class = nil, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, &block)
-        ent.values.first.first if ent
+        ent.to_hash.values.first.first if ent
       end
 
     end
