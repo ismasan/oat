@@ -52,6 +52,17 @@ describe Oat::Serializer do
     Oat::VERSION.should_not be_nil
   end
 
+  describe "#context" do
+    it "is a hash by default" do
+      expect(@sc.new(user1).context).to be_a Hash
+    end
+
+    it "can be set like an options hash" do
+      serializer = @sc.new(user1, controller: double(name: "Fancy"))
+      expect(serializer.context.fetch(:controller).name).to eq "Fancy"
+    end
+  end
+
   describe '#to_hash' do
     it 'builds Hash from item and context with attributes as defined in adapter' do
       serializer = @sc.new(user1, :name => 'some_controller')
