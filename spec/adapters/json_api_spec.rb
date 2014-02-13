@@ -42,7 +42,7 @@ describe Oat::Adapters::JsonAPI do
         :id => user.id,
         :name => user.name,
         :age => user.age,
-        :controller_name => 'some_controller',
+        :controller_name => 'some_controller'
       )
 
       expect(users.first.fetch(:links)).to include(
@@ -82,7 +82,7 @@ describe Oat::Adapters::JsonAPI do
           :id => user.id,
           :name => user.name,
           :age => user.age,
-          :controller_name => 'some_controller',
+          :controller_name => 'some_controller'
         )
         expect(users.first.fetch(:links)).not_to include(:manager)
         expect(users.first.fetch(:links)).to include(
