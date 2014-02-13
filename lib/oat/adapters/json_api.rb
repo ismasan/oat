@@ -29,7 +29,7 @@ module Oat
         @entities[name.to_s.pluralize.to_sym] ||= []
         ent = entity_without_root(obj, serializer_class, &block)
         if ent
-          link name, href: ent[:id]
+          link name, :href => ent[:id]
           @entities[name.to_s.pluralize.to_sym] << ent
         end
       end

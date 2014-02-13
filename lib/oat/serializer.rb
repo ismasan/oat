@@ -39,6 +39,13 @@ module Oat
       end
     end
 
+    def type(*args)
+      if adapter.respond_to?(:type) && adapter.method(:type).arity != 0
+        adapter.type(*args)
+      end
+    end
+
+
     def respond_to_missing?(method_name, include_private = false)
       adapter.respond_to? method_name
     end

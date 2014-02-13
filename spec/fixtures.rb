@@ -11,8 +11,8 @@ module Fixtures
 
         schema do
           type 'user'
-          link :self, href: url_for(item.id)
-          link :empty, href: nil
+          link :self, :href => url_for(item.id)
+          link :empty, :href => nil
 
           property :id, item.id
           map_properties :name, :age
@@ -24,7 +24,7 @@ module Fixtures
 
           entity :manager, item.manager do |manager, s|
             s.type 'manager'
-            s.link :self, href: url_for(manager.id)
+            s.link :self, :href => url_for(manager.id)
             s.properties do |attrs|
               attrs.id manager.id
               attrs.name manager.name

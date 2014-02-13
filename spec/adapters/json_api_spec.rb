@@ -5,7 +5,7 @@ describe Oat::Adapters::JsonAPI do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {name: 'some_controller'}, Oat::Adapters::JsonAPI) }
+  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::JsonAPI) }
 
   describe '#to_hash' do
     it 'produces a JSON-API compliant hash' do

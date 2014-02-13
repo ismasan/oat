@@ -5,7 +5,7 @@ describe Oat::Adapters::Siren do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {name: 'some_controller'}, Oat::Adapters::Siren) }
+  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::Siren) }
 
   describe '#to_hash' do
     it 'produces a Siren-compliant hash' do
