@@ -5,82 +5,107 @@ describe Oat::Adapters::Siren do
 
   include Fixtures
 
-  subject{ serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::Siren) }
+  let(:serializer) { serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::Siren) }
+  let(:hash) { serializer.to_hash }
 
   describe '#to_hash' do
     it 'produces a Siren-compliant hash' do
-      subject.to_hash.tap do |h|
-        #siren class
-        h[:class].should == ['user']
-        # properties
-        h[:properties][:id].should == user.id
-        h[:properties][:name].should == user.name
-        h[:properties][:age].should == user.age
-        h[:properties][:controller_name].should == 'some_controller'
-        # links
-        h[:links][0][:rel].should == [:self]
-        h[:links][0][:href].should == "http://foo.bar.com/#{user.id}"
-        # embedded manager
-        h[:entities][1].tap do |m|
-          m[:class].should == ['manager']
-          m[:properties][:id].should == manager.id
-          m[:properties][:name].should == manager.name
-          m[:properties][:age].should  == manager.age
-          m[:links][0][:rel].should == [:self]
-          m[:links][0][:href].should == "http://foo.bar.com/#{manager.id}"
-        end
-        # embedded friends
-        h[:entities][0].tap do |f|
-          f[:class].should == ['user']
-          f[:properties][:id].should == friend.id
-          f[:properties][:name].should == friend.name
-          f[:properties][:age].should == friend.age
-          f[:properties][:controller_name].should == 'some_controller'
-          f[:links][0][:rel].should == [:self]
-          f[:links][0][:href].should == "http://foo.bar.com/#{friend.id}"
-        end
-        # action close_account
-        h[:actions][0].tap do |a|
-          a[:name].should == :close_account
-          a[:href].should == "http://foo.bar.com/#{user.id}/close_account"
-          a[:class].should == ['danger', 'irreversible']
-          a[:method].should == 'DELETE'
-          a[:fields][0].tap do |f|
-            f[:name].should == :current_password
-            f[:type].should == :password
-          end
-        end
-      end
+      expect(hash.fetch(:class)).to match_array(['user'])
+
+      expect(hash.fetch(:properties)).to include(
+        :id => user.id,
+        :name => user.name,
+        :age => user.age,
+        :controller_name => 'some_controller'
+      )
+
+      p hash.fetch(:links)
+      expect(hash.fetch(:links).size).to be 2
+      expect(hash.fetch(:links)).to include(
+        { :rel => [:self], :href => "http://foo.bar.com/#{user.id}" },
+        { :rel => [:empty], :href => nil }
+      )
+
+      expect(hash.fetch(:entities).size).to be 2
+
+      # embedded friends
+      embedded_friends = hash.fetch(:entities).select{ |o| o[:class].include? "user" }
+      expect(embedded_friends.size).to be 1
+      expect(embedded_friends.first.fetch(:properties)).to include(
+        :id => friend.id,
+        :name => friend.name,
+        :age => friend.age,
+        :controller_name => 'some_controller'
+      )
+      expect(embedded_friends.first.fetch(:links).first).to include(
+        :rel => [:self],
+        :href => "http://foo.bar.com/#{friend.id}"
+      )
+
+      embedded_managers = hash.fetch(:entities).select{ |o| o[:class].include? "manager" }
+      expect(embedded_managers.size).to be 1
+      expect(embedded_managers.first.fetch(:properties)).to include(
+        :id => manager.id,
+        :name => manager.name,
+        :age => manager.age
+      )
+      expect(embedded_managers.first.fetch(:links).first).to include(
+        :rel => [:self],
+        :href => "http://foo.bar.com/#{manager.id}"
+      )
+
+      # action close_account
+      actions = hash.fetch(:actions)
+      expect(actions.size).to be 1
+      expect(actions.first).to include(
+        :name => :close_account,
+        :href => "http://foo.bar.com/#{user.id}/close_account",
+        :class => ['danger', 'irreversible'],
+        :method => 'DELETE'
+      )
+      expect(actions.first.fetch(:fields)).to include(
+        :name => :current_password,
+        :type => :password
+      )
     end
 
     context 'with a nil entity relationship' do
       let(:manager) { nil }
 
       it 'produces a Siren-compliant hash' do
-        subject.to_hash.tap do |h|
-          #siren class
-          h[:class].should == ['user']
-          # properties
-          h[:properties][:id].should == user.id
-          h[:properties][:name].should == user.name
-          h[:properties][:age].should == user.age
-          h[:properties][:controller_name].should == 'some_controller'
-          # links
-          h[:links][0][:rel].should == [:self]
-          h[:links][0][:href].should == "http://foo.bar.com/#{user.id}"
-          # embedded manager
-          h[:entities].any?{|o| o[:class].include?("manager")}.should be_false
-          # embedded friends
-          h[:entities][0].tap do |f|
-            f[:class].should == ['user']
-            f[:properties][:id].should == friend.id
-            f[:properties][:name].should == friend.name
-            f[:properties][:age].should == friend.age
-            f[:properties][:controller_name].should == 'some_controller'
-            f[:links][0][:rel].should == [:self]
-            f[:links][0][:href].should == "http://foo.bar.com/#{friend.id}"
-          end
-        end
+        expect(hash.fetch(:class)).to match_array(['user'])
+
+        expect(hash.fetch(:properties)).to include(
+          :id => user.id,
+          :name => user.name,
+          :age => user.age,
+          :controller_name => 'some_controller'
+        )
+
+        expect(hash.fetch(:links).size).to be 2
+        expect(hash.fetch(:links)).to include(
+          { :rel => [:self], :href => "http://foo.bar.com/#{user.id}" },
+          { :rel => [:empty], :href => nil }
+        )
+
+        expect(hash.fetch(:entities).size).to be 1
+
+        # embedded friends
+        embedded_friends = hash.fetch(:entities).select{ |o| o[:class].include? "user" }
+        expect(embedded_friends.size).to be 1
+        expect(embedded_friends.first.fetch(:properties)).to include(
+          :id => friend.id,
+          :name => friend.name,
+          :age => friend.age,
+          :controller_name => 'some_controller'
+        )
+        expect(embedded_friends.first.fetch(:links).first).to include(
+          :rel => [:self],
+          :href => "http://foo.bar.com/#{friend.id}"
+        )
+
+        embedded_managers = hash.fetch(:entities).select{ |o| o[:class].include? "manager" }
+        expect(embedded_managers.size).to be 0
       end
     end
   end
