@@ -17,7 +17,7 @@ module Oat
       end
 
       def type(*types)
-        @root_name = types.first.to_s
+        @root_name = types.first.to_s.pluralize.to_sym
       end
 
       def link(rel, opts = {})
@@ -57,7 +57,7 @@ module Oat
 
       def to_hash
         raise "JSON API entities MUST define a type. Use type 'user' in your serializers" unless root_name
-        h = {root_name.pluralize.to_sym => [data]}
+        h = {root_name => [data]}
         h[:linked] = @entities if @entities.keys.any?
         h
       end
@@ -68,7 +68,12 @@ module Oat
 
       def entity_without_root(obj, serializer_class = nil, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, &block)
-        ent.values.first.first if ent
+        if ent
+          entity_hash = ent.to_hash
+          entity_hash[ent.adapter.root_name].first
+        else
+          nil
+        end
       end
 
     end
