@@ -19,7 +19,6 @@ describe Oat::Adapters::Siren do
         :controller_name => 'some_controller'
       )
 
-      p hash.fetch(:links)
       expect(hash.fetch(:links).size).to be 2
       expect(hash.fetch(:links)).to include(
         { :rel => [:self], :href => "http://foo.bar.com/#{user.id}" },
