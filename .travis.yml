@@ -1,3 +1,25 @@
 language: ruby
 rvm:
   - 2.0.0
+  - 1.9.3
+  - 1.9.2
+  - 1.8.7
+
+gemfile:
+  - gemfiles/Gemfile.as-2.3.x
+  - gemfiles/Gemfile.as-3.0.x
+  - gemfiles/Gemfile.as-3.1.x
+  - gemfiles/Gemfile.as-3.2.x
+  - gemfiles/Gemfile.as-4.0.x
+
+matrix:
+  include:
+    - gemfile: gemfiles/Gemfile.as-1.4.4
+      rvm: 1.8.7
+  exclude:
+    - gemfile: gemfiles/Gemfile.as-2.3.x
+      rvm: 2.0.0
+    - gemfile: gemfiles/Gemfile.as-4.0.x
+      rvm: 1.8.7
+    - gemfile: gemfiles/Gemfile.as-4.0.x
+      rvm: 1.9.2
