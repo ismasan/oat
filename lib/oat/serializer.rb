@@ -1,4 +1,4 @@
-require 'active_support/core_ext/class/attribute'
+require 'support/class_attribute'
 module Oat
   class Serializer
 
