@@ -10,6 +10,24 @@ describe Oat::Adapters::JsonAPI do
 
   describe '#to_hash' do
     it 'produces a JSON-API compliant hash' do
+      # the user being serialized
+      users = hash.fetch(:users)
+      expect(users.size).to be 1
+      expect(users.first).to include(
+        :id => user.id,
+        :name => user.name,
+        :age => user.age,
+        :controller_name => 'some_controller',
+        :message_from_above => nil
+      )
+
+      expect(users.first.fetch(:links)).to include(
+        :self => "http://foo.bar.com/#{user.id}",
+        # these links are added by embedding entities
+        :manager => manager.id,
+        :friends => [friend.id]
+      )
+
       # embedded friends
       linked_friends = hash.fetch(:linked).fetch(:friends)
       expect(linked_friends.size).to be 1
@@ -17,7 +35,8 @@ describe Oat::Adapters::JsonAPI do
         :id => friend.id,
         :name => friend.name,
         :age => friend.age,
-        :controller_name => 'some_controller'
+        :controller_name => 'some_controller',
+        :message_from_above => "Merged into parent's context"
       )
 
       expect(linked_friends.first.fetch(:links)).to include(
@@ -35,28 +54,29 @@ describe Oat::Adapters::JsonAPI do
         :age => manager.age,
         :links => { :self => "http://foo.bar.com/#{manager.id}" }
       )
-
-      users = hash.fetch(:users)
-      expect(users.size).to be 1
-      expect(users.first).to include(
-        :id => user.id,
-        :name => user.name,
-        :age => user.age,
-        :controller_name => 'some_controller'
-      )
-
-      expect(users.first.fetch(:links)).to include(
-        :self => "http://foo.bar.com/#{user.id}",
-        # these links are added by embedding entities
-        :manager => manager.id,
-        :friends => [friend.id]
-      )
     end
 
     context 'with a nil entity relationship' do
       let(:manager) { nil }
 
       it 'produces a JSON-API compliant hash' do
+        # the user being serialized
+        users = hash.fetch(:users)
+        expect(users.size).to be 1
+        expect(users.first).to include(
+          :id => user.id,
+          :name => user.name,
+          :age => user.age,
+          :controller_name => 'some_controller',
+          :message_from_above => nil
+        )
+
+        expect(users.first.fetch(:links)).not_to include(:manager)
+        expect(users.first.fetch(:links)).to include(
+          :self => "http://foo.bar.com/#{user.id}",
+          # these links are added by embedding entities
+          :friends => [friend.id]
+        )
         # embedded friends
         linked_friends = hash.fetch(:linked).fetch(:friends)
         expect(linked_friends.size).to be 1
@@ -64,7 +84,8 @@ describe Oat::Adapters::JsonAPI do
           :id => friend.id,
           :name => friend.name,
           :age => friend.age,
-          :controller_name => 'some_controller'
+          :controller_name => 'some_controller',
+          :message_from_above => "Merged into parent's context"
         )
 
         expect(linked_friends.first.fetch(:links)).to include(
@@ -75,21 +96,6 @@ describe Oat::Adapters::JsonAPI do
 
         # embedded manager
         hash.fetch(:linked).fetch(:managers).should be_empty
-
-        users = hash.fetch(:users)
-        expect(users.size).to be 1
-        expect(users.first).to include(
-          :id => user.id,
-          :name => user.name,
-          :age => user.age,
-          :controller_name => 'some_controller'
-        )
-        expect(users.first.fetch(:links)).not_to include(:manager)
-        expect(users.first.fetch(:links)).to include(
-          :self => "http://foo.bar.com/#{user.id}",
-          # these links are added by embedding entities
-          :friends => [friend.id]
-        )
       end
     end
   end

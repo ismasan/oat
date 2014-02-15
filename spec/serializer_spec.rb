@@ -58,7 +58,7 @@ describe Oat::Serializer do
     end
 
     it "can be set like an options hash" do
-      serializer = @sc.new(user1, controller: double(name: "Fancy"))
+      serializer = @sc.new(user1, :controller => double(:name => "Fancy"))
       expect(serializer.context.fetch(:controller).name).to eq "Fancy"
     end
   end

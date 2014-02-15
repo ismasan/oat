@@ -18,9 +18,10 @@ module Fixtures
           map_properties :name, :age
           properties do |attrs|
             attrs.controller_name context[:name]
+            attrs.message_from_above context[:message]
           end
 
-          entities :friends, item.friends, klass
+          entities :friends, item.friends, klass, :message => "Merged into parent's context"
 
           entity :manager, item.manager do |manager, s|
             s.type 'manager'
