@@ -32,22 +32,22 @@ module Oat
         data[key] = value
       end
 
-      def entity(name, obj, serializer_class = nil, &block)
+      def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         @entities[name.to_s.pluralize.to_sym] ||= []
-        ent = entity_without_root(obj, serializer_class, &block)
+        ent = entity_without_root(obj, serializer_class, context_options, &block)
         if ent
           link name, :href => ent[:id]
           @entities[name.to_s.pluralize.to_sym] << ent
         end
       end
 
-      def entities(name, collection, serializer_class = nil, &block)
+      def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         link_name = name.to_s.pluralize.to_sym
         data[:links][link_name] = []
 
         collection.each do |obj|
           @entities[link_name] ||= []
-          ent = entity_without_root(obj, serializer_class, &block)
+          ent = entity_without_root(obj, serializer_class, context_options, &block)
           if ent
             data[:links][link_name] << ent[:id]
             @entities[link_name] << ent
@@ -66,8 +66,8 @@ module Oat
 
       attr_reader :root_name
 
-      def entity_without_root(obj, serializer_class = nil, &block)
-        ent = serializer_from_block_or_class(obj, serializer_class, &block)
+      def entity_without_root(obj, serializer_class = nil, context_options = {}, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         ent.values.first.first if ent
       end
 

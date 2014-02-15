@@ -364,17 +364,37 @@ end
 ```
 
 Then, in the `UserSerializer`:
+
 ```ruby
 class ProductSerializer < Oat::Serializer
   adapter Oat::Adapters::HAL
 
   schema do
-    # `context` is the controller, which responds to URL helpers.
+    # `context[:controller]` is the controller, which responds to URL helpers.
     link :self, href: context[:controller].product_url(item)
     ...
   end
 end
 ```
+
+The context hash is passed down to each nested serializer called by a parent. In some cases, you might want to include extra context information for one or more nested serializers. This can be done by passing options into your call to `entity` or `entities`.
+
+```ruby
+class CategorySerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    map_properties :id, :name
+
+    # category entities
+    # passing this option ensures that only direct children are embedded within
+    # the parent serialized category
+    entities :subcategories, item.subcategories, CategorySerializer, embedded: true if context[:embedded]
+  end
+end
+```
+
+The additional options are merged into the current context before being passed down to the nested serializer.
 
 ### Mixin Rails' routing module
 

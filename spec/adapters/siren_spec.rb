@@ -16,7 +16,8 @@ describe Oat::Adapters::Siren do
         :id => user.id,
         :name => user.name,
         :age => user.age,
-        :controller_name => 'some_controller'
+        :controller_name => 'some_controller',
+        :message_from_above => nil
       )
 
       expect(hash.fetch(:links).size).to be 2
@@ -34,7 +35,8 @@ describe Oat::Adapters::Siren do
         :id => friend.id,
         :name => friend.name,
         :age => friend.age,
-        :controller_name => 'some_controller'
+        :controller_name => 'some_controller',
+        :message_from_above => "Merged into parent's context"
       )
       expect(embedded_friends.first.fetch(:links).first).to include(
         :rel => [:self],
@@ -78,7 +80,8 @@ describe Oat::Adapters::Siren do
           :id => user.id,
           :name => user.name,
           :age => user.age,
-          :controller_name => 'some_controller'
+          :controller_name => 'some_controller',
+          :message_from_above => nil
         )
 
         expect(hash.fetch(:links).size).to be 2
@@ -96,7 +99,8 @@ describe Oat::Adapters::Siren do
           :id => friend.id,
           :name => friend.name,
           :age => friend.age,
-          :controller_name => 'some_controller'
+          :controller_name => 'some_controller',
+          :message_from_above => "Merged into parent's context"
         )
         expect(embedded_friends.first.fetch(:links).first).to include(
           :rel => [:self],

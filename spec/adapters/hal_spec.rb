@@ -15,7 +15,8 @@ describe Oat::Adapters::HAL do
         :id => user.id,
         :name => user.name,
         :age => user.age,
-        :controller_name => 'some_controller'
+        :controller_name => 'some_controller',
+        :message_from_above => nil
       )
 
       # links
@@ -40,6 +41,7 @@ describe Oat::Adapters::HAL do
         :name => friend.name,
         :age => friend.age,
         :controller_name => 'some_controller',
+        :message_from_above => "Merged into parent's context",
         :_links => { :self => { :href => "http://foo.bar.com/#{friend.id}" } }
       )
     end
@@ -53,7 +55,8 @@ describe Oat::Adapters::HAL do
           :id => user.id,
           :name => user.name,
           :age => user.age,
-          :controller_name => 'some_controller'
+          :controller_name => 'some_controller',
+          :message_from_above => nil
         )
 
         expect(hash.fetch(:_links)).to include(:self => { :href => "http://foo.bar.com/#{user.id}" })
@@ -71,6 +74,7 @@ describe Oat::Adapters::HAL do
           :name => friend.name,
           :age => friend.age,
           :controller_name => 'some_controller',
+          :message_from_above => "Merged into parent's context",
           :_links => { :self => { :href => "http://foo.bar.com/#{friend.id}" } }
         )
       end
