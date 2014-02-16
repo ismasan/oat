@@ -49,6 +49,7 @@ module Oat
           @entities[link_name] ||= []
           ent = entity_without_root(obj, serializer_class, context_options, &block)
           if ent
+            puts "TRAVIS DEBUG #{data.inspect}"
             data[:links][link_name] << ent[:id]
             @entities[link_name] << ent
           end
