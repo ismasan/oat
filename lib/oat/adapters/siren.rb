@@ -26,14 +26,14 @@ module Oat
         data[:properties][key] = value
       end
 
-      def entity(name, obj, serializer_class = nil, &block)
-        ent = serializer_from_block_or_class(obj, serializer_class, &block)
+      def entity(name, obj, serializer_class = nil, context_options = {}, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         data[:entities] << ent if ent
       end
 
-      def entities(name, collection, serializer_class = nil, &block)
+      def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         collection.each do |obj|
-          entity name, obj, serializer_class, &block
+          entity name, obj, serializer_class, context_options, &block
         end
       end
 

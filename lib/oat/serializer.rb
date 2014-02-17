@@ -20,7 +20,7 @@ module Oat
 
     attr_reader :item, :context, :adapter_class, :adapter
 
-    def initialize(item, context = nil, _adapter_class = nil, parent_serializer = nil)
+    def initialize(item, context = {}, _adapter_class = nil, parent_serializer = nil)
       @item, @context = item, context
       @parent_serializer = parent_serializer
       @adapter_class = _adapter_class || self.class.adapter

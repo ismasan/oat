@@ -46,7 +46,7 @@ Serializers require a single object as argument, which can be a model instance, 
 The full serializer signature is `item`, `context`, `adapter_class`.
 
 * `item` a model or presenter instance. It is available in your serializer's schema as `item`.
-* `context` (optional) a context object or hash that is passed to the serializer and sub-serializers as the `context` variable. Useful if you need to pass request-specific data.
+* `context` (optional) a context hash that is passed to the serializer and sub-serializers as the `context` variable. Useful if you need to pass request-specific data.
 * `adapter_class` (optional) A serializer's adapter can be configured at class-level or passed here to the initializer. Useful if you want to switch adapters based on request data. More on this below.
 
 ### Defining Properties
@@ -350,31 +350,51 @@ end
 
 In frameworks like Rails, you'll probably want to use the URL helpers created by the `routes.rb` file. Two options:
 
-### Pass a context object to serializers
+### Pass a context hash to serializers
 
-You can pass a context object as second argument to serializers. This object will be passed to nested serializers too. For example, you can pass the controller instance itself.
+You can pass a context hash as second argument to serializers. This object will be passed to nested serializers too. For example, you can pass the controller instance itself.
 
 ```ruby
 # users_controller.rb
 
 def show
   user = User.find(params[:id])
-  render json: UserSerializer.new(user, self)
+  render json: UserSerializer.new(user, controller: self)
 end
 ```
 
 Then, in the `UserSerializer`:
+
 ```ruby
 class ProductSerializer < Oat::Serializer
   adapter Oat::Adapters::HAL
 
   schema do
-    # `context` is the controller, which responds to URL helpers.
-    link :self, href: context.product_url(item)
+    # `context[:controller]` is the controller, which responds to URL helpers.
+    link :self, href: context[:controller].product_url(item)
     ...
   end
 end
 ```
+
+The context hash is passed down to each nested serializer called by a parent. In some cases, you might want to include extra context information for one or more nested serializers. This can be done by passing options into your call to `entity` or `entities`.
+
+```ruby
+class CategorySerializer < Oat::Serializer
+  adapter Oat::Adapters::HAL
+
+  schema do
+    map_properties :id, :name
+
+    # category entities
+    # passing this option ensures that only direct children are embedded within
+    # the parent serialized category
+    entities :subcategories, item.subcategories, CategorySerializer, embedded: true if context[:embedded]
+  end
+end
+```
+
+The additional options are merged into the current context before being passed down to the nested serializer.
 
 ### Mixin Rails' routing module
 
