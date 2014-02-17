@@ -23,8 +23,3 @@ matrix:
       rvm: 1.8.7
     - gemfile: gemfiles/Gemfile.as-4.0.x
       rvm: 1.9.2
-  allow_failures:
-    - gemfile: gemfiles/Gemfile.as-3.0.x
-      rvm: 1.8.7
-    - gemfile: gemfiles/Gemfile.as-1.4.4
-      rvm: 1.8.7
