@@ -1,14 +1,15 @@
 require 'oat/props'
+require 'oat/data'
 module Oat
   class Adapter
 
     def initialize(serializer)
       @serializer = serializer
-      @data = Hash.new{|h,k| h[k] = {}}
+      @data = Data.new{|h,k| h[k] = Data.new}
     end
 
     def to_hash
-      data
+      data.to_hash
     end
 
     protected
@@ -29,9 +30,9 @@ module Oat
         serializer_class.adapter self.class
         s = serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class, serializer.top)
         serializer.top.instance_exec(obj, s, &block)
-        s.to_hash
+        s
       else
-        serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class, serializer.top).to_hash
+        serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class, serializer.top)
       end
     end
   end
