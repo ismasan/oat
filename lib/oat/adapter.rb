@@ -31,7 +31,7 @@ module Oat
         serializer.top.instance_exec(obj, s, &block)
         s.to_hash
       else
-        serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class).to_hash
+        serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class, serializer.top).to_hash
       end
     end
   end

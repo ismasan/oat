@@ -34,7 +34,7 @@ module Oat
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         @entities[name.to_s.pluralize.to_sym] ||= []
-        ent = entity_without_root(obj, serializer_class, context_options, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           link name, :href => ent[:id]
           @entities[name.to_s.pluralize.to_sym] << ent
@@ -47,7 +47,7 @@ module Oat
 
         collection.each do |obj|
           @entities[link_name] ||= []
-          ent = entity_without_root(obj, serializer_class, context_options, &block)
+          ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
           if ent
             data[:links][link_name] << ent[:id]
             @entities[link_name] << ent
@@ -57,19 +57,18 @@ module Oat
 
       def to_hash
         raise "JSON API entities MUST define a type. Use type 'user' in your serializers" unless root_name
-        h = {root_name.pluralize.to_sym => [data]}
-        h[:linked] = @entities if @entities.keys.any?
-        h
+        if serializer.top != serializer
+          return data
+        else
+          h = {root_name.pluralize.to_sym => [data]}
+          h[:linked] = @entities if @entities.keys.any?
+          return h
+        end
       end
 
       protected
 
       attr_reader :root_name
-
-      def entity_without_root(obj, serializer_class = nil, context_options = {}, &block)
-        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-        ent.values.first.first if ent
-      end
 
     end
   end
