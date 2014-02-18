@@ -27,7 +27,7 @@ module Oat
       end
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
-        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block).to_hash
         data[:entities] << ent if ent
       end
 

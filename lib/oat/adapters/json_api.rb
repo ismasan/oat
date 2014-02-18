@@ -34,7 +34,7 @@ module Oat
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         @entities[name.to_s.pluralize.to_sym] ||= []
-        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block).to_hash
         if ent
           link name, :href => ent[:id]
           @entities[name.to_s.pluralize.to_sym] << ent
@@ -47,7 +47,7 @@ module Oat
 
         collection.each do |obj|
           @entities[link_name] ||= []
-          ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
+          ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block).to_hash
           if ent
             data[:links][link_name] << ent[:id]
             @entities[link_name] << ent
