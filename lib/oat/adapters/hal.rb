@@ -23,6 +23,7 @@ module Oat
           serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         end
       end
+      alias_method :collection, :entities
 
     end
   end
