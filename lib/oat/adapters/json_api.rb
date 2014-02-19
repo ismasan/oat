@@ -13,7 +13,7 @@ module Oat
 
       def initialize(*args)
         super
-        @entities = {}
+        @entities = Data.new
       end
 
       def type(*types)
@@ -36,7 +36,8 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         entity_hash[name.to_s.pluralize.to_sym] ||= []
         if ent
-          link name, :href => ent[:id]
+          ent_hash = ent.to_hash
+          link name, :href => ent_hash[:id]
           entity_hash[name.to_s.pluralize.to_sym] << ent
         end
       end
@@ -49,7 +50,8 @@ module Oat
           entity_hash[link_name] ||= []
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
           if ent
-            data[:links][link_name] << ent[:id]
+            ent_hash = ent.to_hash
+            data[:links][link_name] << ent_hash[:id]
             entity_hash[link_name] << ent
           end
         end
@@ -58,11 +60,12 @@ module Oat
       def to_hash
         raise "JSON API entities MUST define a type. Use type 'user' in your serializers" unless root_name
         if serializer.top != serializer
-          return data
+          return data.to_hash
         else
-          h = {root_name.pluralize.to_sym => [data]}
+          h = Data.new
+          h[root_name.pluralize.to_sym] = [data]
           h[:linked] = @entities if @entities.keys.any?
-          return h
+          return h.to_hash
         end
       end
 
