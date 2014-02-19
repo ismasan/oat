@@ -15,7 +15,7 @@ module Oat
     end
 
     def self.warn(msg)
-      logger ? logger.warning(msg) : puts(msg)
+      logger ? logger.warning(msg) : Kernel.warn(msg)
     end
 
     attr_reader :item, :context, :adapter_class, :adapter
