@@ -33,11 +33,11 @@ module Oat
       end
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
-        @entities[name.to_s.pluralize.to_sym] ||= []
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
+        entity_hash[name.to_s.pluralize.to_sym] ||= []
         if ent
           link name, :href => ent[:id]
-          @entities[name.to_s.pluralize.to_sym] << ent
+          entity_hash[name.to_s.pluralize.to_sym] << ent
         end
       end
 
@@ -46,11 +46,11 @@ module Oat
         data[:links][link_name] = []
 
         collection.each do |obj|
-          @entities[link_name] ||= []
+          entity_hash[link_name] ||= []
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
           if ent
             data[:links][link_name] << ent[:id]
-            @entities[link_name] << ent
+            entity_hash[link_name] << ent
           end
         end
       end
@@ -69,6 +69,14 @@ module Oat
       protected
 
       attr_reader :root_name
+
+      def entity_hash
+        if serializer.top == serializer
+          @entities
+        else
+          serializer.top.adapter.entity_hash
+        end
+      end
 
     end
   end

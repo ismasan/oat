@@ -71,6 +71,18 @@ describe Oat::Adapters::JsonAPI do
           )
         end
       end
+
+      context 'with nested entities' do
+        let(:friend) { user_class.new('Joe', 33, 2, [other_friend]) }
+        let(:other_friend) { user_class.new('Jack', 28, 4, []) }
+
+        subject(:linked_friends){ hash.fetch(:linked).fetch(:friends) }
+        its(:size) { should eq(2) }
+
+        it 'has the correct entities' do
+          linked_friends.map{ |friend| friend.fetch(:id) }.should include(2, 4)
+        end
+      end
     end
 
     context 'with a nil entity relationship' do
