@@ -36,6 +36,7 @@ module Oat
           entity name, obj, serializer_class, context_options, &block
         end
       end
+      alias_method :collection, :entities
 
       def action(name, &block)
         action = Action.new(name)

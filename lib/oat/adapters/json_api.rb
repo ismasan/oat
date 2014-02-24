@@ -17,7 +17,7 @@ module Oat
       end
 
       def type(*types)
-        @root_name = types.first.to_s
+        @root_name = types.first.to_s.pluralize.to_sym
       end
 
       def link(rel, opts = {})
@@ -55,12 +55,27 @@ module Oat
         end
       end
 
+      def collection(name, collection, serializer_class = nil, context_options = {}, &block)
+        @treat_as_resource_collection = true
+        data[:resource_collection] = [] unless data[:resource_collection].is_a?(Array)
+
+        collection.each do |obj|
+          ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
+          data[:resource_collection] << ent if ent
+        end
+      end
+
       def to_hash
         raise "JSON API entities MUST define a type. Use type 'user' in your serializers" unless root_name
         if serializer.top != serializer
           return data
         else
-          h = {root_name.pluralize.to_sym => [data]}
+          h = {}
+          if @treat_as_resource_collection
+            h[root_name] = data[:resource_collection]
+          else
+            h[root_name] = [data]
+          end
           h[:linked] = @entities if @entities.keys.any?
           return h
         end
