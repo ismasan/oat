@@ -42,7 +42,7 @@ module Oat
       end
 
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
-        return if collection.nil?
+        return if collection.nil? || collection.empty?
         link_name = name.to_s.pluralize.to_sym
         data[:links][link_name] = []
 

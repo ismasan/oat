@@ -52,8 +52,7 @@ describe Oat::Adapters::JsonAPI do
         it 'contains the correct links' do
           expect(linked_friends.first.fetch(:links)).to include(
             :self => "http://foo.bar.com/#{friend.id}",
-            :empty => nil,
-            :friends => []
+            :empty => nil
           )
         end
       end
@@ -100,6 +99,19 @@ describe Oat::Adapters::JsonAPI do
 
     context 'with a nil entities relationship' do
       let(:user) { user_class.new('Ismael', 35, 1, nil, manager) }
+      let(:users) { hash.fetch(:users) }
+
+      it 'excludes the entity from user links' do
+        expect(users.first.fetch(:links)).not_to include(:friends)
+      end
+
+      it 'excludes the entity from the linked hash' do
+        expect(hash.fetch(:linked)).not_to include(:friends)
+      end
+    end
+
+    context 'when an empty entities relationship' do
+      let(:user) { user_class.new('Ismael', 35, 1, [], manager) }
       let(:users) { hash.fetch(:users) }
 
       it 'excludes the entity from user links' do
