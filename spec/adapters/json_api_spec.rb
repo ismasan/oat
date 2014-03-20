@@ -165,6 +165,21 @@ describe Oat::Adapters::JsonAPI do
           end
         end
 
+        context 'with id and ids' do
+          let(:serializer_class) do
+            Class.new(Oat::Serializer) do
+              schema do
+                type 'users'
+                link :self, :id => "45", :ids => ["1", "2", "3"]
+              end
+            end
+          end
+
+          it "errs" do
+            expect{hash}.to raise_error(ArgumentError)
+          end
+        end
+
         context 'with invalid keys' do
           let(:serializer_class) do
             Class.new(Oat::Serializer) do

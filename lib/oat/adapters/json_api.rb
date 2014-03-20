@@ -33,6 +33,9 @@ module Oat
         unless unsupported_opts.empty?
           raise ArgumentError, "Unsupported opts: #{unsupported_opts.join(", ")}"
         end
+        if opts.has_key?(:id) && opts.has_key?(:ids)
+          raise ArgumentError, "ops canot contain both :id and :ids"
+        end
       end
       private :check_link_keys
 
