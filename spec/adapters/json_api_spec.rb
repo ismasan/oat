@@ -303,7 +303,25 @@ describe Oat::Adapters::JsonAPI do
           end
         end
       end
+    end
 
+    context 'link_template' do
+      let(:serializer_class) do
+        Class.new(Oat::Serializer) do
+          schema do
+            type 'users'
+            link "user.managers", :href => "http://foo.bar.com/{user.id}/managers", :templated => true
+            link "user.friends",  :href => "http://foo.bar.com/{user.id}/friends", :templated => true
+          end
+        end
+      end
+
+      it 'renders them top level' do
+        expect(hash.fetch(:links)).to eq({
+          "user.managers" => "http://foo.bar.com/{user.id}/managers",
+          "user.friends"  => "http://foo.bar.com/{user.id}/friends"
+        })
+      end
     end
   end
 end
