@@ -94,7 +94,20 @@ describe Oat::Adapters::JsonAPI do
       end
 
       it 'excludes the entity from the linked hash' do
-        hash.fetch(:linked).fetch(:managers).should be_empty
+        expect(hash.fetch(:linked)).not_to include(:managers)
+      end
+    end
+
+    context 'with a nil entities relationship' do
+      let(:user) { user_class.new('Ismael', 35, 1, nil, manager) }
+      let(:users) { hash.fetch(:users) }
+
+      it 'excludes the entity from user links' do
+        expect(users.first.fetch(:links)).not_to include(:friends)
+      end
+
+      it 'excludes the entity from the linked hash' do
+        expect(hash.fetch(:linked)).not_to include(:friends)
       end
     end
 
