@@ -25,7 +25,9 @@ describe Oat::Adapters::JsonAPI do
 
       it 'contains the correct user links' do
         expect(users.first.fetch(:links)).to include(
-          :self => "http://foo.bar.com/#{user.id}",
+          :self => {
+            :href => "http://foo.bar.com/#{user.id}"
+          },
           # these links are added by embedding entities
           :manager => manager.id,
           :friends => [friend.id]
@@ -51,8 +53,9 @@ describe Oat::Adapters::JsonAPI do
 
         it 'contains the correct links' do
           expect(linked_friends.first.fetch(:links)).to include(
-            :self => "http://foo.bar.com/#{friend.id}",
-            :empty => nil
+            :self => {
+              :href => "http://foo.bar.com/#{friend.id}"
+            }
           )
         end
       end
@@ -66,7 +69,7 @@ describe Oat::Adapters::JsonAPI do
             :id => manager.id,
             :name => manager.name,
             :age => manager.age,
-            :links => { :self => "http://foo.bar.com/#{manager.id}" }
+            :links => { :self => { :href => "http://foo.bar.com/#{manager.id}"} }
           )
         end
       end
@@ -169,7 +172,7 @@ describe Oat::Adapters::JsonAPI do
 
         it 'contains the correct user links' do
           expect(users.first.fetch(:links)).to include(
-            :self => "http://foo.bar.com/#{user.id}",
+            :self => {:href => "http://foo.bar.com/#{user.id}"},
             # these links are added by embedding entities
             :manager => manager.id,
             :friends => [friend.id]
@@ -185,7 +188,7 @@ describe Oat::Adapters::JsonAPI do
               :id => manager.id,
               :name => manager.name,
               :age => manager.age,
-              :links => { :self => "http://foo.bar.com/#{manager.id}" }
+              :links => { :self => {:href =>"http://foo.bar.com/#{manager.id}"} }
             )
           end
         end

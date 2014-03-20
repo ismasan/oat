@@ -21,7 +21,10 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links][rel] = opts[:href]
+        data[:links][rel] = {}
+        if opts[:href]
+          data[:links][rel][:href] = opts[:href]
+        end
       end
 
       def properties(&block)
@@ -36,7 +39,7 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           entity_hash[name.to_s.pluralize.to_sym] ||= []
-          link name, :href => ent[:id]
+          data[:links][name] = ent[:id]
           entity_hash[name.to_s.pluralize.to_sym] << ent
         end
       end
