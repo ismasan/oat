@@ -21,11 +21,20 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links][rel] = {}
-        if opts[:href]
-          data[:links][rel][:href] = opts[:href]
+        if opts.is_a?(Hash)
+          check_link_keys(opts)
+        end
+        data[:links][rel] = opts
+      end
+
+      def check_link_keys(opts)
+        unsupported_opts = opts.keys - [:href, :id, :ids, :type]
+
+        unless unsupported_opts.empty?
+          raise ArgumentError, "Unsupported opts: #{unsupported_opts.join(", ")}"
         end
       end
+      private :check_link_keys
 
       def properties(&block)
         data.merge! yield_props(&block)

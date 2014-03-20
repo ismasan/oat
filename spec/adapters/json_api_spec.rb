@@ -87,6 +87,101 @@ describe Oat::Adapters::JsonAPI do
       end
     end
 
+    context 'object links' do
+      context "as string" do
+        let(:serializer_class) do
+          Class.new(Oat::Serializer) do
+            schema do
+              type 'users'
+              link :self, "45"
+            end
+          end
+        end
+
+        it 'renders just the string' do
+          expect(hash.fetch(:users).first.fetch(:links)).to eq({
+            :self => "45"
+          })
+        end
+      end
+
+      context 'as array' do
+        let(:serializer_class) do
+          Class.new(Oat::Serializer) do
+            schema do
+              type 'users'
+              link :self, ["45", "46", "47"]
+            end
+          end
+        end
+
+        it 'renders the array' do
+          expect(hash.fetch(:users).first.fetch(:links)).to eq({
+            :self => ["45", "46", "47"]
+          })
+        end
+      end
+
+      context 'as hash' do
+        context 'with single id' do
+          let(:serializer_class) do
+            Class.new(Oat::Serializer) do
+              schema do
+                type 'users'
+                link :self, :href => "http://foo.bar.com/#{item.id}", :id => item.id.to_s, :type => 'user'
+              end
+            end
+          end
+
+          it 'renders all the keys' do
+            expect(hash.fetch(:users).first.fetch(:links)).to eq({
+              :self => {
+                :href => "http://foo.bar.com/#{user.id}",
+                :id => user.id.to_s,
+                :type => 'user'
+              }
+            })
+          end
+        end
+
+        context 'with ids' do
+          let(:serializer_class) do
+            Class.new(Oat::Serializer) do
+              schema do
+                type 'users'
+                link :self, :href => "http://foo.bar.com/1,2,3", :ids => ["1", "2", "3"], :type => 'user'
+              end
+            end
+          end
+
+          it 'renders all the keys' do
+            expect(hash.fetch(:users).first.fetch(:links)).to eq({
+              :self => {
+                :href => "http://foo.bar.com/1,2,3",
+                :ids => ["1", "2", "3"],
+                :type => 'user'
+              }
+            })
+          end
+        end
+
+        context 'with invalid keys' do
+          let(:serializer_class) do
+            Class.new(Oat::Serializer) do
+              schema do
+                type 'users'
+                link :self, :not_a_valid_key => "value"
+              end
+            end
+          end
+
+          it "errs" do
+            expect{hash}.to raise_error(ArgumentError)
+          end
+        end
+      end
+    end
+
     context 'with a nil entity relationship' do
       let(:manager) { nil }
       let(:users) { hash.fetch(:users) }
