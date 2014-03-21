@@ -21,8 +21,23 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links][rel] = opts[:href]
+        if opts.is_a?(Hash)
+          check_link_keys(opts)
+        end
+        data[:links][rel] = opts
       end
+
+      def check_link_keys(opts)
+        unsupported_opts = opts.keys - [:href, :id, :ids, :type]
+
+        unless unsupported_opts.empty?
+          raise ArgumentError, "Unsupported opts: #{unsupported_opts.join(", ")}"
+        end
+        if opts.has_key?(:id) && opts.has_key?(:ids)
+          raise ArgumentError, "ops canot contain both :id and :ids"
+        end
+      end
+      private :check_link_keys
 
       def properties(&block)
         data.merge! yield_props(&block)
@@ -36,7 +51,7 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           entity_hash[name.to_s.pluralize.to_sym] ||= []
-          link name, :href => ent[:id]
+          data[:links][name] = ent[:id]
           entity_hash[name.to_s.pluralize.to_sym] << ent
         end
       end

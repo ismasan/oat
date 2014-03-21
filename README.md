@@ -582,7 +582,7 @@ Or install it yourself as:
 
 ## TODO / contributions welcome
 
-* JsonAPI URL and ID modes, top-level links
+* JsonAPI top-level links
 * testing module that can be used for testing spec-compliance in user apps?
 
 ## Contributing
