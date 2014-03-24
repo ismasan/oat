@@ -9,6 +9,7 @@ end
 
 module Oat
   module Adapters
+
     class JsonAPI < Oat::Adapter
 
       def initialize(*args)
@@ -61,9 +62,10 @@ module Oat
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
+          ent_hash = ent.to_hash
           entity_hash[name.to_s.pluralize.to_sym] ||= []
-          data[:links][name] = ent[:id]
-          entity_hash[name.to_s.pluralize.to_sym] << ent
+          data[:links][name] = ent_hash[:id]
+          entity_hash[name.to_s.pluralize.to_sym] << ent_hash
         end
       end
 
@@ -76,8 +78,9 @@ module Oat
           entity_hash[link_name] ||= []
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
           if ent
-            data[:links][link_name] << ent[:id]
-            entity_hash[link_name] << ent
+            ent_hash = ent.to_hash
+            data[:links][link_name] << ent_hash[:id]
+            entity_hash[link_name] << ent_hash
           end
         end
       end
@@ -88,7 +91,7 @@ module Oat
 
         collection.each do |obj|
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-          data[:resource_collection] << ent if ent
+          data[:resource_collection] << ent.to_hash if ent
         end
       end
 
@@ -119,6 +122,11 @@ module Oat
         else
           serializer.top.adapter.entity_hash
         end
+      end
+
+      def entity_without_root(obj, serializer_class = nil, &block)
+        ent = serializer_from_block_or_class(obj, serializer_class, &block)
+        ent.to_hash.values.first.first if ent
       end
 
     end
