@@ -464,7 +464,7 @@ class CustomAdapter < Oat::Adapter
   end
 
   def entity(name, obj, serializer_class = nil, &block)
-    data[:nested_documents] = serializer_from_block_or_class(obj, serializer_class, &block)
+    data[:nested_documents] = serializer_from_block_or_class(obj, serializer_class, &block).to_hash
   end
 
   ... etc
@@ -524,7 +524,7 @@ class SocialAdapter < Oat::Adapter
 
   def friends(friend_list, serializer_class = nil, &block)
     data[:friends] = friend_list.map do |obj|
-      serializer_from_block_or_class(obj, serializer_class, &block)
+      serializer_from_block_or_class(obj, serializer_class, &block).to_hash
     end
   end
 end
