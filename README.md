@@ -113,6 +113,11 @@ class ProductSerializer < Oat::Serializer
 end
 ```
 
+### Defining Links
+
+Links to other resources can be added by using `link` with a name and an options hash. Most adapters expect just an href in the options hash, but some might support additional properties.
+Some adapters also suport passing `templated: true` in the options hash to indicate special treatment of a link template.
+
 ## Adapters
 
 Using the included [HAL](http://stateless.co/hal_specification.html) adapter, the `ProductSerializer` above would render the following JSON:
@@ -582,7 +587,7 @@ Or install it yourself as:
 
 ## TODO / contributions welcome
 
-* JsonAPI top-level links
+* JsonAPI top-level meta
 * testing module that can be used for testing spec-compliance in user apps?
 
 ## Contributing

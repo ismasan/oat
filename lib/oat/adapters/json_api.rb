@@ -15,6 +15,7 @@ module Oat
       def initialize(*args)
         super
         @entities = {}
+        @link_templates = {}
       end
 
       def type(*types)
@@ -23,7 +24,12 @@ module Oat
 
       def link(rel, opts = {})
         if opts.is_a?(Hash)
-          check_link_keys(opts)
+          templated = opts.delete(:templated)
+          if templated
+            link_template(rel, opts[:href])
+          else
+            check_link_keys(opts)
+          end
         end
         data[:links][rel] = opts
       end
@@ -39,6 +45,11 @@ module Oat
         end
       end
       private :check_link_keys
+
+      def link_template(key, value)
+        @link_templates[key] = value
+      end
+      private :link_template
 
       def properties(&block)
         data.merge! yield_props(&block)
@@ -96,6 +107,7 @@ module Oat
             h[root_name] = [data]
           end
           h[:linked] = @entities if @entities.keys.any?
+          h[:links] = @link_templates if @link_templates.keys.any?
           return h
         end
       end
