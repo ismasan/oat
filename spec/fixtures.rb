@@ -33,7 +33,7 @@ module Fixtures
             end
           end
 
-          if respond_to?(:action)
+          if adapter.respond_to?(:action)
             action :close_account do |action|
               action.href "http://foo.bar.com/#{item.id}/close_account"
               action.class 'danger'

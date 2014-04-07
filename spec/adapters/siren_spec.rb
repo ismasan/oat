@@ -57,7 +57,7 @@ describe Oat::Adapters::Siren do
 
       # action close_account
       actions = hash.fetch(:actions)
-      expect(actions.size).to be 1
+      expect(actions.size).to eql(1)
       expect(actions.first).to include(
         :name => :close_account,
         :href => "http://foo.bar.com/#{user.id}/close_account",
