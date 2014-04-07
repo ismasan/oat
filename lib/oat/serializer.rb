@@ -35,7 +35,7 @@ module Oat
       if adapter.respond_to?(name)
         adapter.send(name, *args, &block)
       else
-        self.class.warn "[#{adapter.class}] does not implement ##{name}. Called with #{args}"
+        super
       end
     end
 

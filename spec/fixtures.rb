@@ -10,7 +10,7 @@ module Fixtures
         klass = self
 
         schema do
-          type 'user'
+          type 'user' if respond_to?(:type)
           link :self, :href => url_for(item.id)
           link :empty, :href => nil
 
@@ -33,13 +33,15 @@ module Fixtures
             end
           end
 
-          action :close_account do |action|
-            action.href "http://foo.bar.com/#{item.id}/close_account"
-            action.class 'danger'
-            action.class 'irreversible'
-            action.method 'DELETE'
-            action.field :current_password do |field|
-              field.type :password
+          if respond_to?(:action)
+            action :close_account do |action|
+              action.href "http://foo.bar.com/#{item.id}/close_account"
+              action.class 'danger'
+              action.class 'irreversible'
+              action.method 'DELETE'
+              action.field :current_password do |field|
+                field.type :password
+              end
             end
           end
         end
