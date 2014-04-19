@@ -14,6 +14,8 @@ module Fixtures
           link :self, :href => url_for(item.id)
           link :empty, :href => nil
 
+          meta :nation, 'zulu'
+
           property :id, item.id
           map_properties :name, :age
           properties do |attrs|

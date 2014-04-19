@@ -16,6 +16,7 @@ module Oat
         super
         @entities = {}
         @link_templates = {}
+        @meta = {}
       end
 
       def type(*types)
@@ -57,6 +58,10 @@ module Oat
 
       def property(key, value)
         data[key] = value
+      end
+
+      def meta(key, value)
+        @meta[key] = value
       end
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
@@ -108,6 +113,7 @@ module Oat
           end
           h[:linked] = @entities if @entities.keys.any?
           h[:links] = @link_templates if @link_templates.keys.any?
+          h[:meta] = @meta if @meta.keys.any?
           return h
         end
       end
