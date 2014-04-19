@@ -16,7 +16,9 @@ describe Oat::Adapters::HAL do
         :name => user.name,
         :age => user.age,
         :controller_name => 'some_controller',
-        :message_from_above => nil
+        :message_from_above => nil,
+        # Meta property
+        :nation => 'zulu'
       )
 
       # links
