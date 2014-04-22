@@ -27,7 +27,7 @@ describe Oat::Adapters::HAL do
       expect(hash.fetch(:_embedded)).to include(:manager, :friends)
 
       # embedded manager
-      expect(hash.fetch(:_embedded).fetch(:manager)).to include(
+      expect(hash.fetch(:_embedded).fetch(:manager).to_hash).to include(
         :id => manager.id,
         :name => manager.name,
         :age => manager.age,
@@ -36,7 +36,7 @@ describe Oat::Adapters::HAL do
 
       # embedded friends
       expect(hash.fetch(:_embedded).fetch(:friends).size).to be 1
-      expect(hash.fetch(:_embedded).fetch(:friends).first).to include(
+      expect(hash.fetch(:_embedded).fetch(:friends).first.to_hash).to include(
         :id => friend.id,
         :name => friend.name,
         :age => friend.age,
@@ -69,7 +69,7 @@ describe Oat::Adapters::HAL do
 
         # embedded friends
         expect(hash.fetch(:_embedded).fetch(:friends).size).to be 1
-        expect(hash.fetch(:_embedded).fetch(:friends).first).to include(
+        expect(hash.fetch(:_embedded).fetch(:friends).first.to_hash).to include(
           :id => friend.id,
           :name => friend.name,
           :age => friend.age,

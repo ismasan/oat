@@ -34,6 +34,8 @@ module Oat
     def method_missing(name, *args, &block)
       if adapter.respond_to?(name)
         adapter.send(name, *args, &block)
+      elsif to_hash.respond_to?(name)
+        to_hash.send(name, *args, &block)
       else
         super
       end
@@ -64,6 +66,5 @@ module Oat
       value = item.send(name)
       property name, value
     end
-
   end
 end
