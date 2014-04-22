@@ -2,6 +2,14 @@
 module Oat
   module Adapters
     class HAL < Oat::Adapter
+      def initialize(serializer)
+        super
+        @data = Hash.new
+        [:_links, :_embedded].each do |key|
+          data[key] = {}
+        end
+      end
+
       def link(rel, opts = {})
         data[:_links][rel] = opts if opts[:href]
       end

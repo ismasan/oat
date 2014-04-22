@@ -5,6 +5,7 @@ module Oat
 
       def initialize(*args)
         super
+        data[:properties] = {}
         data[:links] = []
         data[:entities] = []
         data[:actions] = []

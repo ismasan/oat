@@ -14,6 +14,8 @@ module Oat
 
       def initialize(*args)
         super
+        data.default_proc = proc { |h, k| h[k] = {} }
+
         @entities = {}
         @link_templates = {}
       end
