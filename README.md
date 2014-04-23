@@ -118,6 +118,12 @@ end
 Links to other resources can be added by using `link` with a name and an options hash. Most adapters expect just an href in the options hash, but some might support additional properties.
 Some adapters also suport passing `templated: true` in the options hash to indicate special treatment of a link template.
 
+
+### Adding meta-information
+
+You can add meta-information about your JSON document via `meta :property, "value"`. When using the [JsonAPI](http://jsonapi.org/) adapter these properties are rendered in a top level "meta" node. When using the HAL or Siren adapters `meta` just acts as an alias to `property`, so the properties are rendered like normal properties.
+
+
 ## Adapters
 
 Using the included [HAL](http://stateless.co/hal_specification.html) adapter, the `ProductSerializer` above would render the following JSON:
