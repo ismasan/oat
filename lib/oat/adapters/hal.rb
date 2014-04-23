@@ -14,6 +14,8 @@ module Oat
         data[key] = value
       end
 
+      alias_method :meta, :property
+
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         entity_serializer = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         data[:_embedded][name] = entity_serializer ? entity_serializer.to_hash : nil

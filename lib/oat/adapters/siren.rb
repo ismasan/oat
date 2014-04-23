@@ -26,6 +26,8 @@ module Oat
         data[:properties][key] = value
       end
 
+      alias_method :meta, :property
+
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         data[:entities] << ent.to_hash if ent

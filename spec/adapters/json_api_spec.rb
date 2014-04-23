@@ -35,6 +35,28 @@ describe Oat::Adapters::JsonAPI do
       end
     end
 
+    context 'meta' do
+      subject(:meta) { hash.fetch(:meta) }
+
+      it 'contains meta properties' do
+        expect(meta[:nation]).to eq('zulu')
+      end
+
+      context 'without meta' do
+        let(:serializer_class) {
+           Class.new(Oat::Serializer) do
+              schema do
+                type 'users'
+              end
+            end
+        }
+
+        it 'does not contain meta information' do
+          expect(hash[:meta]).to be_nil
+        end
+      end
+    end
+
     context 'linked' do
       context 'using #entities' do
         subject(:linked_friends){ hash.fetch(:linked).fetch(:friends) }
