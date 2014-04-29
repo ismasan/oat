@@ -64,7 +64,8 @@ describe Oat::Adapters::Siren do
         :name => :close_account,
         :href => "http://foo.bar.com/#{user.id}/close_account",
         :class => ['danger', 'irreversible'],
-        :method => 'DELETE'
+        :method => 'DELETE',
+        :type => 'application/json'
       )
       expect(actions.first.fetch(:fields)).to include(
         :name => :current_password,

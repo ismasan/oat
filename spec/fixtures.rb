@@ -41,6 +41,7 @@ module Fixtures
               action.class 'danger'
               action.class 'irreversible'
               action.method 'DELETE'
+              action.type   'application/json'
               action.field :current_password do |field|
                 field.type :password
               end
