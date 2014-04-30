@@ -344,6 +344,10 @@ describe Oat::Adapters::JsonAPI do
           "user.friends"  => "http://foo.bar.com/{user.id}/friends"
         })
       end
+
+      it "doesn't render them as links on the resource" do
+        expect(hash.fetch(:users).first).to_not have_key(:links)
+      end
     end
   end
 end

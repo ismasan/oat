@@ -24,6 +24,7 @@ module Oat
       end
 
       def link(rel, opts = {})
+        templated = false
         if opts.is_a?(Hash)
           templated = opts.delete(:templated)
           if templated
@@ -32,7 +33,7 @@ module Oat
             check_link_keys(opts)
           end
         end
-        data[:links][rel] = opts
+        data[:links][rel] = opts unless templated
       end
 
       def check_link_keys(opts)
