@@ -67,9 +67,11 @@ describe Oat::Adapters::Siren do
         :method => 'DELETE',
         :type => 'application/json'
       )
+
       expect(actions.first.fetch(:fields)).to include(
         :name => :current_password,
-        :type => :password
+        :type => :password,
+        :title => 'enter password:'
       )
     end
 

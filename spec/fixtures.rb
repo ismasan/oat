@@ -44,6 +44,7 @@ module Fixtures
               action.type   'application/json'
               action.field :current_password do |field|
                 field.type :password
+                field.title 'enter password:'
               end
             end
           end
