@@ -11,6 +11,7 @@ gemfile:
   - gemfiles/Gemfile.as-3.1.x
   - gemfiles/Gemfile.as-3.2.x
   - gemfiles/Gemfile.as-4.0.x
+  - gemfiles/Gemfile.as-4.1.x
 
 matrix:
   include:
@@ -21,5 +22,9 @@ matrix:
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.as-4.0.x
       rvm: 1.8.7
+    - gemfile: gemfiles/Gemfile.as-4.1.x
+      rvm: 1.8.7
     - gemfile: gemfiles/Gemfile.as-4.0.x
+      rvm: 1.9.2
+    - gemfile: gemfiles/Gemfile.as-4.1.x
       rvm: 1.9.2
