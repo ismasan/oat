@@ -49,7 +49,7 @@ describe Oat::Serializer do
   let(:user1) { user_class.new('Ismael', 35, 1, []) }
 
   it 'should have a version number' do
-    Oat::VERSION.should_not be_nil
+    expect(Oat::VERSION).to_not be_nil
   end
 
   describe "#context" do
