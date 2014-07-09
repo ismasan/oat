@@ -104,7 +104,7 @@ describe Oat::Adapters::JsonAPI do
         its(:size) { should eq(2) }
 
         it 'has the correct entities' do
-          linked_friends.map{ |friend| friend.fetch(:id) }.should include(2, 4)
+          expect(linked_friends.map{ |friend| friend.fetch(:id) }).to include(2, 4)
         end
       end
     end
