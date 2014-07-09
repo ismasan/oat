@@ -51,7 +51,7 @@ module Oat
 
     def to_hash
       @to_hash ||= (
-        self.instance_eval &self.class.schema
+        instance_eval(&self.class.schema)
         adapter.to_hash
       )
     end
