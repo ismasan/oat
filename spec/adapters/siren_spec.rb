@@ -44,6 +44,7 @@ describe Oat::Adapters::Siren do
         :rel => [:self],
         :href => "http://foo.bar.com/#{friend.id}"
       )
+      expect(embedded_friends.first.fetch(:rel)).to include(:friends)
 
       embedded_managers = hash.fetch(:entities).select{ |o| o[:class].include? "manager" }
       expect(embedded_managers.size).to be 1
@@ -56,6 +57,7 @@ describe Oat::Adapters::Siren do
         :rel => [:self],
         :href => "http://foo.bar.com/#{manager.id}"
       )
+      expect(embedded_managers.first.fetch(:rel)).to include(:manager)
 
       # action close_account
       actions = hash.fetch(:actions)
