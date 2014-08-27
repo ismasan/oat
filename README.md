@@ -186,7 +186,6 @@ That means that your app could switch adapters on run time depending, for exampl
 Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
 
 ## Nested serializers
-)
 
 It's common for a media type to include "embedded" entities within a payload. For example an `account` entity may have many `users`. An Oat serializer can inline such relationships:
 
