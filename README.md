@@ -186,6 +186,7 @@ That means that your app could switch adapters on run time depending, for exampl
 Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
 
 ## Nested serializers
+)
 
 It's common for a media type to include "embedded" entities within a payload. For example an `account` entity may have many `users`. An Oat serializer can inline such relationships:
 
@@ -276,6 +277,12 @@ The way sub-entities are rendered in the final payload is up to the adapter. In 
   }
 }
 ```
+
+## Nested serializers when using the `JsonAPI` adapter
+
+Collections are easy to express in HAL and Siren because they're no different from any other "entity". JsonAPI, however, doesn't work that way. In JsonAPI there's a distinction between "side-loaded" entities and the collection that is the subject of the resource. For this reason a `collection` method was added to the Oat DSL specifically for use with the `JsonAPI` adapter.
+
+In the `HAL` and `Siren` adapters, `collection` is aliased to `entities`, but in the `JsonAPI` adapter, it sets the resource's main collection array as per the spec. `entities` keep the current behaviour of side-loading entities in the resource.
 
 ## Subclassing
 
