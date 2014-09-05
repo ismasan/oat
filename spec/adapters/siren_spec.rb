@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'oat/adapters/siren'
+require 'json'
 
 describe Oat::Adapters::Siren do
 
@@ -75,6 +76,27 @@ describe Oat::Adapters::Siren do
         :type => :password,
         :title => 'enter password:'
       )
+    end
+
+    context "when serializing optional attributes" do
+      let(:serializer) { serializer_class.new(user, {:collapse_optional_attributes => collapse_attributes}, Oat::Adapters::Siren) }
+      subject { JSON.parse(JSON.dump(serializer.to_hash))  }
+
+      context "and collapsing is not enabled" do
+        let(:collapse_attributes) { false }
+
+        it "should serialize the empty attributes" do
+          expect(subject['entities'].first['entities']).to_not be_nil
+        end
+      end
+
+      context "and collapsing is enabled" do
+        let(:collapse_attributes) { true }
+
+        it "should not serialize empty attributes" do
+          expect(subject['entities'].first['entities']).to be_nil
+        end
+      end
     end
 
     context 'with a nil entity relationship' do
