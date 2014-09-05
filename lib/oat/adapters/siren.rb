@@ -10,6 +10,41 @@ module Oat
         data[:actions] = []
       end
 
+      # Enable collapsing of optional attributes by setting the context option
+      # :collapse_optional_attributes => true
+      #
+      # When collapsing is enabled the Siren response will drop any empty
+      # attributes from the response, since all top level entity attributes
+      # are optional per the Siren spec.
+      #
+      # Example:
+      #
+      #    {
+      #      "class" : [ "order" ],
+      #      "properties" : {
+      #        "orderNumber" :42
+      #      },
+      #      "entities" : [],
+      #      ....
+      #    }
+      #
+      # Would drop the empty entities:
+      #
+      #    {
+      #      "class" : [ "order" ],
+      #      "properties" : {
+      #        "orderNumber" :42,
+      #    .....
+      #      }
+      #    }
+      def to_hash
+        if serializer.context[:collapse_optional_attributes]
+          data.dup.tap{|hsh| hsh.each{|k,v| hsh.delete(k) if v.empty?}}
+        else
+          data
+        end
+      end
+
       def type(*types)
         data[:class] = types
       end
