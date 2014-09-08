@@ -19,6 +19,10 @@ module Oat
         @meta = {}
       end
 
+      def rel(*rels)
+        # no-op to maintain interface compatibility with the Siren adapter
+      end
+
       def type(*types)
         @root_name = types.first.to_s.pluralize.to_sym
       end
