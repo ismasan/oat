@@ -99,6 +99,49 @@ describe Oat::Adapters::Siren do
       end
     end
 
+    context 'when serializing sub-entities' do
+      let(:serializer_class) do
+        # abbreviated fixture for testing entity links
+        Class.new(Oat::Serializer) do
+          schema do
+            entity :manager, item.manager, {:entity_link => context[:entity_link]} do |manager, s|
+              s.type 'manager'
+              s.link :self, :href => "http://example.com/#{manager.id}"
+              s.property :id, manager.id
+            end
+          end
+        end
+      end
+
+      let(:serializer) { serializer_class.new(user, {:entity_link => entity_link}, Oat::Adapters::Siren) }
+      let(:json_hash) { JSON.parse(JSON.dump(serializer.to_hash))  }
+      subject do
+        # the entity being embedded is the subject
+        json_hash["entities"].first
+      end
+
+      context 'with embedded representations' do
+        let(:entity_link) { false }
+
+        it 'should contain a properties hash' do
+          expect(subject["properties"]).to_not be_nil
+          expect(subject["properties"]["id"]).to eql(user.manager.id)
+          # embedded representation DOES NOT contain an href attribute
+          expect(subject["href"]).to be_nil
+        end
+      end
+
+      context 'with embedded links' do
+        let(:entity_link) { true }
+
+        it 'should contain an href attribute' do
+          # entity link must contain an href attribute
+          expect(subject["href"]).to_not be_nil
+        end
+      end
+
+    end
+
     context 'with a nil entity relationship' do
       let(:manager) { nil }
 

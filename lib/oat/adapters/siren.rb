@@ -78,7 +78,16 @@ module Oat
         if ent
           # use the name as the sub-entities rel to the parent resource.
           ent.rel(name)
-          data[:entities] << ent.to_hash
+
+          entity_hash = ent.to_hash
+
+          # use embedded link when requested
+          # https://github.com/kevinswiber/siren#embedded-link
+          if serializer.context[:entity_link] || context_options[:entity_link]
+            entity_hash = entity_link_hash(entity_hash)
+          end
+
+          data[:entities] << entity_hash
         end
       end
 
@@ -89,6 +98,19 @@ module Oat
       end
 
       alias_method :collection, :entities
+
+      def entity_link_hash(entity_hash)
+        entity_link_hash = {}
+        # self link - TODO fix for strings, only finds if self link is a symbol
+        self_link = entity_hash[:links].find{|link| link[:rel].include?(:self)}
+        entity_link_hash[:href] = self_link[:href] if self_link
+        entity_link_hash[:class] = entity_hash[:class] if entity_hash.has_key?(:class)
+        entity_link_hash[:rel] = entity_hash[:rel] if entity_hash.has_key?(:rel)
+
+        return entity_link_hash
+      end
+
+      private :entity_link_hash
 
       def action(name, &block)
         action = Action.new(name)
