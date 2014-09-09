@@ -48,11 +48,22 @@ module Oat
       #      }
       #    }
       def to_hash
-        if serializer.context[:collapse_optional_attributes]
-          data.dup.tap{|hsh| hsh.each{|k,v| hsh.delete(k) if v.empty?}}
-        else
-          data
+        hash = data.dup
+
+        if hash.has_key?(:properties) && serializer.context[:camelize_properties]
+          hash[:properties].tap do |props|
+            props.keys.each do |key|
+              props[key.to_s.camelize(:lower)] = props[key]
+              props.delete(key)
+            end
+          end
         end
+
+        if serializer.context[:collapse_optional_attributes]
+          hash.tap{|hsh| hsh.each{|k,v| hsh.delete(k) if v.empty?}}
+        end
+
+        return hash
       end
 
       def type(*types)

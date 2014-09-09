@@ -78,6 +78,43 @@ describe Oat::Adapters::Siren do
       )
     end
 
+    context "when serializing properties" do
+      let(:user_class) { Struct.new(:first_name, :last_name, :id) }
+      let(:user) { user_class.new('Charlie', 'Brown', 1) }
+      let(:serializer_class) do
+        # abbreviated fixture for testing entity links
+        Class.new(Oat::Serializer) do
+          schema do
+            map_properties :first_name, :last_name, :id
+          end
+        end
+      end
+
+      let(:serializer) { serializer_class.new(user, {:camelize_properties => camelize_properties}, Oat::Adapters::Siren) }
+      let(:json_hash) { JSON.parse(JSON.dump(serializer.to_hash))  }
+      # subject is the properties hash
+      subject do
+        json_hash['properties']
+      end
+      context "and property name camelization is not enabled" do
+        let(:camelize_properties) { false }
+
+        it 'should not camelize the property names' do
+          expect(subject.keys).to include('first_name', 'last_name')
+          expect(subject.keys).to_not include('firstName', 'lastName')
+        end
+      end
+
+      context "and property name camelization is enabled" do
+        let(:camelize_properties) { true }
+
+        it 'should camelize the property names' do
+          expect(subject.keys).to_not include('first_name', 'last_name')
+          expect(subject.keys).to include('firstName', 'lastName')
+        end
+      end
+    end
+
     context "when serializing optional attributes" do
       let(:serializer) { serializer_class.new(user, {:collapse_optional_attributes => collapse_attributes}, Oat::Adapters::Siren) }
       subject { JSON.parse(JSON.dump(serializer.to_hash))  }
