@@ -23,7 +23,7 @@ module Fixtures
             attrs.message_from_above context[:message]
           end
 
-          entities :friends, item.friends, klass, :message => "Merged into parent's context"
+          entities [:friends, 'http://example.org/rels/person'], item.friends, klass, :message => "Merged into parent's context"
 
           entity :manager, item.manager do |manager, s|
             s.type 'manager'
