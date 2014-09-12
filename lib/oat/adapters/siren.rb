@@ -12,12 +12,9 @@ module Oat
 
       # Sub-Entities have a required rel attribute
       # https://github.com/kevinswiber/siren#rel
-      def rel(*rels)
-        if data[:rel].nil?
-          data[:rel] = []
-        end
-
-        data[:rel] = rels
+      def rel(rels)
+        # rel must be an array.
+        data[:rel] = (rels.is_a?(Array) ? rels : [rels])
       end
 
       def type(*types)

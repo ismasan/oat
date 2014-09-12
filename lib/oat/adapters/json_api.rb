@@ -19,7 +19,7 @@ module Oat
         @meta = {}
       end
 
-      def rel(*rels)
+      def rel(rels)
         # no-op to maintain interface compatibility with the Siren adapter
       end
 
@@ -73,15 +73,17 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           ent_hash = ent.to_hash
-          entity_hash[name.to_s.pluralize.to_sym] ||= []
-          data[:links][name] = ent_hash[:id]
-          entity_hash[name.to_s.pluralize.to_sym] << ent_hash
+          _name = entity_name(name)
+          entity_hash[_name.to_s.pluralize.to_sym] ||= []
+          data[:links][_name] = ent_hash[:id]
+          entity_hash[_name.to_s.pluralize.to_sym] << ent_hash
         end
       end
 
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         return if collection.nil? || collection.empty?
-        link_name = name.to_s.pluralize.to_sym
+        _name = entity_name(name)
+        link_name = _name.to_s.pluralize.to_sym
         data[:links][link_name] = []
 
         collection.each do |obj|
@@ -94,6 +96,13 @@ module Oat
           end
         end
       end
+
+      def entity_name(name)
+        # entity name may be an array, but JSON API only uses the first
+        name.respond_to?(:first) ? name.first : name
+      end
+
+      private :entity_name
 
       def collection(name, collection, serializer_class = nil, context_options = {}, &block)
         @treat_as_resource_collection = true
