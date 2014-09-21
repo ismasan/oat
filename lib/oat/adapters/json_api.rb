@@ -23,7 +23,7 @@ module Oat
       end
 
       def type(*types)
-        @root_name = entity_name(types.first.to_s)
+        @root_name = entity_name(types.first)
       end
 
       def link(rel, opts = {})
@@ -72,7 +72,7 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           ent_hash = ent.to_hash
-          ent_name = entity_name(name.to_s)
+          ent_name = entity_name(name)
           entity_hash[ent_name] ||= []
           data[:links][name] = ent_hash[:id]
           entity_hash[ent_name] << ent_hash
@@ -81,7 +81,7 @@ module Oat
 
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         return if collection.nil? || collection.empty?
-        link_name = entity_name(name.to_s)
+        link_name = entity_name(name)
         data[:links][link_name] = []
 
         collection.each do |obj|
@@ -143,10 +143,7 @@ module Oat
       end
 
       def entity_name(name)
-        unless @individual
-          name = name.pluralize
-        end
-        name.to_sym
+        name.to_s.pluralize.to_sym
       end
 
     end

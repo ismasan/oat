@@ -38,7 +38,7 @@ describe Oat::Adapters::JsonAPI do
     end
 
     context 'individual top level' do
-      subject(:individual_user){ individual_hash.fetch(:user) }
+      subject(:individual_user){ individual_hash.fetch(:users) }
 
       it 'is not an array' do
         expect(individual_user).not_to be_kind_of(Array)
