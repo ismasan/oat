@@ -5,6 +5,25 @@ module Fixtures
     base.let(:friend) { user_class.new('Joe', 33, 2, []) }
     base.let(:manager) { user_class.new('Jane', 29, 3, []) }
     base.let(:user) { user_class.new('Ismael', 35, 1, [friend], manager) }
+
+    base.let(:individual_serializer_class) do
+      Class.new(Oat::Serializer) do
+        klass = self
+        schema do
+          individual # set this entity as an individual resource
+          type 'user' if respond_to?(:type)
+
+          property :id, item.id
+          map_properties :name, :age
+
+          properties do |attrs|
+            attrs.controller_name context[:name]
+            attrs.message_from_above context[:message]
+          end
+        end
+      end
+    end
+
     base.let(:serializer_class) do
       Class.new(Oat::Serializer) do
         klass = self

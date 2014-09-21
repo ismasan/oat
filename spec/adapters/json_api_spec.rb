@@ -5,8 +5,10 @@ describe Oat::Adapters::JsonAPI do
 
   include Fixtures
 
+  let(:individual_serializer) { individual_serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::JsonAPI) }
   let(:serializer) { serializer_class.new(user, {:name => 'some_controller'}, Oat::Adapters::JsonAPI) }
   let(:hash) { serializer.to_hash }
+  let(:individual_hash) { individual_serializer.to_hash }
 
   describe '#to_hash' do
     context 'top level' do
@@ -31,6 +33,24 @@ describe Oat::Adapters::JsonAPI do
           # these links are added by embedding entities
           :manager => manager.id,
           :friends => [friend.id]
+        )
+      end
+    end
+
+    context 'individual top level' do
+      subject(:individual_user){ individual_hash.fetch(:users) }
+
+      it 'is not an array' do
+        expect(individual_user).not_to be_kind_of(Array)
+      end
+
+      it 'contains the correct user properties' do
+        expect(individual_user).to include(
+          :id => user.id,
+          :name => user.name,
+          :age => user.age,
+          :controller_name => 'some_controller',
+          :message_from_above => nil
         )
       end
     end
