@@ -11,12 +11,15 @@ module Oat
   module Adapters
 
     class JsonAPI < Oat::Adapter
-
       def initialize(*args)
         super
         @entities = {}
         @link_templates = {}
         @meta = {}
+      end
+
+      def individual
+        @individual = true
       end
 
       def type(*types)
@@ -110,6 +113,8 @@ module Oat
           h = {}
           if @treat_as_resource_collection
             h[root_name] = data[:resource_collection]
+          elsif @individual
+            h[root_name] = data
           else
             h[root_name] = [data]
           end
@@ -138,7 +143,9 @@ module Oat
       end
 
       def entity_name(name)
-        name = name.pluralize
+        unless @individual
+          name = name.pluralize
+        end
         name.to_sym
       end
 

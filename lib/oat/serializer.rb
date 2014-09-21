@@ -39,6 +39,12 @@ module Oat
       end
     end
 
+    def individual
+      if adapter.respond_to?(:individual) && adapter.method(:individual).arity == 0
+        adapter.individual
+      end
+    end
+
     def type(*args)
       if adapter.respond_to?(:type) && adapter.method(:type).arity != 0
         adapter.type(*args)
