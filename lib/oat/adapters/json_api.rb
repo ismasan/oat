@@ -20,7 +20,7 @@ module Oat
       end
 
       def type(*types)
-        @root_name = types.first.to_s.pluralize.to_sym
+        @root_name = entity_name(types.first.to_s)
       end
 
       def link(rel, opts = {})
@@ -69,15 +69,16 @@ module Oat
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
         if ent
           ent_hash = ent.to_hash
-          entity_hash[name.to_s.pluralize.to_sym] ||= []
+          ent_name = entity_name(name.to_s)
+          entity_hash[ent_name] ||= []
           data[:links][name] = ent_hash[:id]
-          entity_hash[name.to_s.pluralize.to_sym] << ent_hash
+          entity_hash[ent_name] << ent_hash
         end
       end
 
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         return if collection.nil? || collection.empty?
-        link_name = name.to_s.pluralize.to_sym
+        link_name = entity_name(name.to_s)
         data[:links][link_name] = []
 
         collection.each do |obj|
@@ -134,6 +135,11 @@ module Oat
       def entity_without_root(obj, serializer_class = nil, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, &block)
         ent.to_hash.values.first.first if ent
+      end
+
+      def entity_name(name)
+        name = name.pluralize
+        name.to_sym
       end
 
     end
