@@ -10,6 +10,13 @@ module Oat
         data[:actions] = []
       end
 
+      # Sub-Entities have a required rel attribute
+      # https://github.com/kevinswiber/siren#rel
+      def rel(rels)
+        # rel must be an array.
+        data[:rel] = Array(rels)
+      end
+
       def type(*types)
         data[:class] = types
       end
@@ -30,7 +37,11 @@ module Oat
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-        data[:entities] << ent.to_hash if ent
+        if ent
+          # use the name as the sub-entities rel to the parent resource.
+          ent.rel(name)
+          data[:entities] << ent.to_hash
+        end
       end
 
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
