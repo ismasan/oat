@@ -277,6 +277,12 @@ The way sub-entities are rendered in the final payload is up to the adapter. In 
 }
 ```
 
+## Nested serializers when using the `JsonAPI` adapter
+
+Collections are easy to express in HAL and Siren because they're no different from any other "entity". JsonAPI, however, doesn't work that way. In JsonAPI there's a distinction between "side-loaded" entities and the collection that is the subject of the resource. For this reason a `collection` method was added to the Oat DSL specifically for use with the `JsonAPI` adapter.
+
+In the `HAL` and `Siren` adapters, `collection` is aliased to `entities`, but in the `JsonAPI` adapter, it sets the resource's main collection array as per the spec. `entities` keep the current behaviour of side-loading entities in the resource.
+
 ## Subclassing
 
 Serializers can be subclassed, for example if you want all your serializers to share the same adapter or add shared helper methods.
