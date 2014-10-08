@@ -14,7 +14,7 @@ module Oat
       # https://github.com/kevinswiber/siren#rel
       def rel(rels)
         # rel must be an array.
-        data[:rel] = (rels.is_a?(Array) ? rels : [rels])
+        data[:rel] = Array(rels)
       end
 
       # Enable collapsing of optional attributes by setting the context option
