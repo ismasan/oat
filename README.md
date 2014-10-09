@@ -183,7 +183,7 @@ ProductSerializer.new(product, nil, Oat::Adapters::HAL)
 
 That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
 
-Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails.
+Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails. Also see [Rails Integration](#railsintegration).
 
 ## Nested serializers
 
@@ -582,6 +582,68 @@ The result for the SocialHalAdapter is:
 ```
 
 You can take a look at [the built-in Hypermedia adapters](https://github.com/ismasan/oat/tree/master/lib/oat/adapters) for guidance.
+
+## Rails Integration
+The Rails responder functionality works out of the box with Oat when the
+requests specify JSON as their response format via a header
+`Accept: application/json` or query parameter `format=json`.
+
+However, if you want to also support the mime type of your Hypermedia
+format of choice, it will require a little bit of code.
+
+The example below uses Siren, but the same pattern can be used for HAL and
+JsonAPI.
+
+Register the Siren mime-type and a responder:
+
+```ruby
+# config/initializers/oat.rb
+Mime::Type.register 'application/vnd.siren+json', :siren
+
+ActionController::Renderers.add :siren do |resource, options|
+  self.content_type ||= Mime[:siren]
+  resource.to_siren
+end
+```
+
+In your controller, add `:siren` to the `respond_to`:
+
+```ruby
+class UsersController < ApplicationController
+  respond_to :siren, :json
+
+  def show
+    user = User.find(params[:id])
+    respond_with UserSerializer.new(user)
+  end
+end
+```
+
+Finally, add a `to_siren` method to your serializer:
+
+```ruby
+class UserSerializer < Oat::Serializer
+  adapter Oat::Adapters::Siren
+
+  schema do
+    property :name, item.name
+    property :email, item.name
+  end
+
+  def to_siren
+    to_json
+  end
+end
+```
+
+Now http requests that specify the Siren mime type will work as
+expected.
+
+**NOTE**
+The key thing that makes this all hang together is that the
+object passed to `respond_with` implements a `to_FORMAT` method, where
+`FORMAT` is the symbol used to register the mime type and responder
+(`:siren`).  Without it, Rails will not invoke your responder block.
 
 ## Installation
 
