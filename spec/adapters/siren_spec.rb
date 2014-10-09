@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'oat/adapters/siren'
+require 'json'
 
 describe Oat::Adapters::Siren do
 
@@ -78,6 +79,107 @@ describe Oat::Adapters::Siren do
         :type => :password,
         :title => 'enter password:'
       )
+    end
+
+    context "when serializing properties" do
+      let(:user_class) { Struct.new(:first_name, :last_name, :id) }
+      let(:user) { user_class.new('Charlie', 'Brown', 1) }
+      let(:serializer_class) do
+        # abbreviated fixture for testing entity links
+        Class.new(Oat::Serializer) do
+          schema do
+            map_properties :first_name, :last_name, :id
+          end
+        end
+      end
+
+      let(:serializer) { serializer_class.new(user, {:camelize_properties => camelize_properties}, Oat::Adapters::Siren) }
+      let(:json_hash) { JSON.parse(JSON.dump(serializer.to_hash))  }
+      # subject is the properties hash
+      subject do
+        json_hash['properties']
+      end
+      context "and property name camelization is not enabled" do
+        let(:camelize_properties) { false }
+
+        it 'should not camelize the property names' do
+          expect(subject.keys).to include('first_name', 'last_name')
+          expect(subject.keys).to_not include('firstName', 'lastName')
+        end
+      end
+
+      context "and property name camelization is enabled" do
+        let(:camelize_properties) { true }
+
+        it 'should camelize the property names' do
+          expect(subject.keys).to_not include('first_name', 'last_name')
+          expect(subject.keys).to include('firstName', 'lastName')
+        end
+      end
+    end
+
+    context "when serializing optional attributes" do
+      let(:serializer) { serializer_class.new(user, {:collapse_optional_attributes => collapse_attributes}, Oat::Adapters::Siren) }
+      subject { JSON.parse(JSON.dump(serializer.to_hash))  }
+
+      context "and collapsing is not enabled" do
+        let(:collapse_attributes) { false }
+
+        it "should serialize the empty attributes" do
+          expect(subject['entities'].first['entities']).to_not be_nil
+        end
+      end
+
+      context "and collapsing is enabled" do
+        let(:collapse_attributes) { true }
+
+        it "should not serialize empty attributes" do
+          expect(subject['entities'].first['entities']).to be_nil
+        end
+      end
+    end
+
+    context 'when serializing sub-entities' do
+      let(:serializer_class) do
+        # abbreviated fixture for testing entity links
+        Class.new(Oat::Serializer) do
+          schema do
+            entity :manager, item.manager, {:entity_link => context[:entity_link]} do |manager, s|
+              s.type 'manager'
+              s.link :self, :href => "http://example.com/#{manager.id}"
+              s.property :id, manager.id
+            end
+          end
+        end
+      end
+
+      let(:serializer) { serializer_class.new(user, {:entity_link => entity_link}, Oat::Adapters::Siren) }
+      let(:json_hash) { JSON.parse(JSON.dump(serializer.to_hash))  }
+      subject do
+        # the entity being embedded is the subject
+        json_hash["entities"].first
+      end
+
+      context 'with embedded representations' do
+        let(:entity_link) { false }
+
+        it 'should contain a properties hash' do
+          expect(subject["properties"]).to_not be_nil
+          expect(subject["properties"]["id"]).to eql(user.manager.id)
+          # embedded representation DOES NOT contain an href attribute
+          expect(subject["href"]).to be_nil
+        end
+      end
+
+      context 'with embedded links' do
+        let(:entity_link) { true }
+
+        it 'should contain an href attribute' do
+          # entity link must contain an href attribute
+          expect(subject["href"]).to_not be_nil
+        end
+      end
+
     end
 
     context 'with a nil entity relationship' do
