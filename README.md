@@ -183,7 +183,7 @@ ProductSerializer.new(product, nil, Oat::Adapters::HAL)
 
 That means that your app could switch adapters on run time depending, for example, on the request's `Accept` header or anything you need.
 
-Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails. Also see [Rails Integration](#railsintegration).
+Note: a different library could be written to make adapter-switching auto-magical for different frameworks, for example using [Responders](http://api.rubyonrails.org/classes/ActionController/Responder.html) in Rails. Also see [Rails Integration](#rails-integration).
 
 ## Nested serializers
 
