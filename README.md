@@ -162,7 +162,7 @@ adapter Oat::Adapters::Siren
 ```
 At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specification.html), [Siren](https://github.com/kevinswiber/siren) and [JsonAPI](http://jsonapi.org/), but it's easy to write your own.
 
-Note: Oat adapters are not *required* by default. Your code should explicitely require the ones it needs:
+Note: Oat adapters are not *required* by default. Your code should explicitly require the ones it needs:
 
 ```ruby
 # HAL
