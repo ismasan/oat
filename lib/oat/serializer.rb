@@ -4,6 +4,10 @@ module Oat
 
     class_attribute :_adapter, :logger
 
+    class << self
+      attr_accessor :type
+    end
+
     def self.schema(&block)
       @schema = block if block_given?
       @schema || Proc.new{}
@@ -20,11 +24,16 @@ module Oat
 
     attr_reader :item, :context, :adapter_class, :adapter
 
-    def initialize(item, context = {}, _adapter_class = nil, parent_serializer = nil)
-      @item, @context = item, context
+    def initialize(item, context = nil, _adapter_class = nil, parent_serializer = nil)
+      @item = item
+      @context = context || {}
       @parent_serializer = parent_serializer
       @adapter_class = _adapter_class || self.class.adapter
       @adapter = @adapter_class.new(self)
+      if self.class.type
+        type(self.class.type)
+      end
+      @context[:_serialized_entities] ||= {}
     end
 
     def top
@@ -51,6 +60,9 @@ module Oat
 
     def to_hash
       @to_hash ||= (
+        if self.class.type
+          Array(item).each { |i| set_serialized(self.class.type, i.id) }
+        end
         instance_eval(&self.class.schema)
         adapter.to_hash
       )
@@ -63,6 +75,17 @@ module Oat
     def map_property(name)
       value = item.send(name)
       property name, value
+    end
+
+    def set_serialized(type, id)
+      @context[:_serialized_entities][type] ||= {}
+      @context[:_serialized_entities][type][id] = true
+    end
+
+    def serialized?(type, id)
+      h = @context[:_serialized_entities]
+      h = h[type] if h
+      h[id] if h
     end
 
   end

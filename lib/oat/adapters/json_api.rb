@@ -71,7 +71,7 @@ module Oat
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-        if ent
+        if ent && !serializer.serialized?(name, ent.item.id)
           ent_hash = ent.to_hash
           _name = entity_name(name)
           entity_hash[_name.to_s.pluralize.to_sym] ||= []
@@ -80,8 +80,9 @@ module Oat
         end
       end
 
-      def entities(name, collection, serializer_class = nil, context_options = {}, &block)
+      def entities(name, collection, serializer_class = nil, context_options = nil, &block)
         return if collection.nil? || collection.empty?
+        context_options ||= {}
         _name = entity_name(name)
         link_name = _name.to_s.pluralize.to_sym
         data[:links][link_name] = []
@@ -89,7 +90,7 @@ module Oat
         collection.each do |obj|
           entity_hash[link_name] ||= []
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-          if ent
+          if ent && !serializer.serialized?(link_name, ent.item.id)
             ent_hash = ent.to_hash
             data[:links][link_name] << ent_hash[:id]
             entity_hash[link_name] << ent_hash
@@ -104,13 +105,19 @@ module Oat
 
       private :entity_name
 
-      def collection(name, collection, serializer_class = nil, context_options = {}, &block)
+      def collection(name, collection, serializer_class = nil, context_options = nil, &block)
+        context_options ||= {}
         @treat_as_resource_collection = true
         data[:resource_collection] = [] unless data[:resource_collection].is_a?(Array)
 
         collection.each do |obj|
           ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
-          data[:resource_collection] << ent.to_hash if ent
+          if ent
+            unless serializer.serialized?(root_name, ent.item.id)
+              # serializer.set_serialized(root_name, ent.item.id)
+              data[:resource_collection] << ent.to_hash
+            end
+          end
         end
       end
 
