@@ -198,8 +198,10 @@ class AccountSerializer < Oat::Serializer
     property :status, item.status
     # user entities
     entities :users, item.users do |user, user_serializer|
-      user_serializer.name user.name
-      user_serializer.email user.email
+      user_serializer.properties do |props|
+        props.name user.name
+        props.email user.email
+      end
     end
   end
 end
