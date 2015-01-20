@@ -40,7 +40,11 @@ module Oat
         if ent
           # use the name as the sub-entities rel to the parent resource.
           ent.rel(name)
-          data[:entities] << ent.to_hash
+          ent_hash = ent.to_hash
+
+          unless data[:entities].include? ent_hash
+            data[:entities] << ent_hash
+          end
         end
       end
 

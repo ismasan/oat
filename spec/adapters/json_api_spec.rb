@@ -84,7 +84,10 @@ describe Oat::Adapters::JsonAPI do
 
       context 'using #entity' do
         subject(:linked_managers){ hash.fetch(:linked).fetch(:managers) }
-        its(:size) { should eq(1) }
+
+        it "does not duplicate an entity that is associated with 2 objects" do
+          expect(linked_managers.size).to eq(1)
+        end
 
         it "contains the correct properties and links" do
           expect(linked_managers.first).to include(
@@ -313,7 +316,10 @@ describe Oat::Adapters::JsonAPI do
 
         context 'sub entity' do
           subject(:linked_managers){ collection_hash.fetch(:linked).fetch(:managers) }
-          its(:size) { should eq(1) }
+
+          it "does not duplicate an entity that is associated with multiple objects" do
+            expect(linked_managers.size).to eq(1)
+          end
 
           it "contains the correct properties and links" do
             expect(linked_managers.first).to include(
