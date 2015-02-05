@@ -3,7 +3,11 @@ module Oat
   module Adapters
     class HAL < Oat::Adapter
       def link(rel, opts = {})
-        data[:_links][rel] = opts if opts[:href]
+        if opts.is_a?(Array)
+          data[:_links][rel] = opts.select { |link_obj| link_obj.include?(:href) }
+        else
+          data[:_links][rel] = opts if opts[:href]
+        end
       end
 
       def properties(&block)
