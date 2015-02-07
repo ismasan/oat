@@ -81,5 +81,23 @@ describe Oat::Adapters::HAL do
         )
       end
     end
+
+    let(:array_of_linked_objects_serializer) {
+      array_of_linked_objects_serializer_class.new(friendly_user, nil, Oat::Adapters::HAL)
+    }
+    let(:linked_objects_hash) { array_of_linked_objects_serializer.to_hash }
+
+    context 'with an array of linked objects' do
+      it 'produces a HAL-compliant hash' do
+        expect(linked_objects_hash.fetch(:_links).fetch(:related).size).to be 3
+        expect(linked_objects_hash.fetch(:_links)).to include(
+          :related => [
+            {:type=>"friend", :href=>"http://foo.bar.com/1"},
+            {:type=>"friend", :href=>"http://foo.bar.com/2"},
+            {:type=>"friend", :href=>"http://foo.bar.com/3"}
+          ]
+        )
+      end
+    end
   end
 end
