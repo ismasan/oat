@@ -3,7 +3,7 @@ module Fixtures
   def self.included(base)
     base.let(:user_class) { Struct.new(:name, :age, :id, :friends, :manager) }
     base.let(:friend) { user_class.new('Joe', 33, 2, []) }
-    base.let(:manager) { user_class.new('Jane', 29, 3, []) }
+    base.let(:manager) { user_class.new('Jane', 29, 3, [friend]) }
     base.let(:user) { user_class.new('Ismael', 35, 1, [friend], manager) }
     base.let(:friendly_user) { user_class.new('Jeff', 33, 1, [friend, manager, user]) }
     base.let(:serializer_class) do
@@ -34,6 +34,8 @@ module Fixtures
               attrs.name manager.name
               attrs.age manager.age
             end
+
+            entities [:friends, 'http://example.org/rels/person'], item.friends, klass, :message => "Merged into parent's context"
           end
 
           if adapter.respond_to?(:action)

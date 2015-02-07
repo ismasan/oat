@@ -74,9 +74,13 @@ module Oat
         if ent
           ent_hash = ent.to_hash
           _name = entity_name(name)
-          entity_hash[_name.to_s.pluralize.to_sym] ||= []
+          link_name = _name.to_s.pluralize.to_sym
           data[:links][_name] = ent_hash[:id]
-          entity_hash[_name.to_s.pluralize.to_sym] << ent_hash
+
+          entity_hash[link_name] ||= []
+          unless entity_hash[link_name].include? ent_hash
+            entity_hash[link_name] << ent_hash
+          end
         end
       end
 
@@ -92,7 +96,9 @@ module Oat
           if ent
             ent_hash = ent.to_hash
             data[:links][link_name] << ent_hash[:id]
-            entity_hash[link_name] << ent_hash
+            unless entity_hash[link_name].include? ent_hash
+              entity_hash[link_name] << ent_hash
+            end
           end
         end
       end
