@@ -1,5 +1,34 @@
 # Changelog
 
+## [v0.4.6](https://github.com/ismasan/oat/tree/v0.4.6)
+[Full Changelog](https://github.com/ismasan/oat/compare/v0.4.5...v0.4.6)
+#### 07/02/15
+- *Merged pull-request:* HAL support for an array of linked objects [\#60](https://github.com/ismasan/oat/pull/60) ([abargnesi](https://github.com/abargnesi))
+
+- *Merged pull-request:* Fixing Nested Serializers example [\#57](https://github.com/ismasan/oat/pull/57) ([coderdave](https://github.com/coderdave))
+
+- *Merged pull-request:* Fix spelling in README.md [\#53](https://github.com/ismasan/oat/pull/53) ([killpack](https://github.com/killpack))
+
+- *Merged pull-request:* provide an example of using Rails responders to support requests using a Hypermedia mime type [\#52](https://github.com/ismasan/oat/pull/52) ([apsoto](https://github.com/apsoto))
+
+- *Merged pull-request:* Stop entities/entity from duplicating entries in linked hash. [\#49](https://github.com/ismasan/oat/pull/49) ([dpdawson](https://github.com/dpdawson))
+
+- *Merged pull-request:* Better documentation for Oat::Adapters::JsonAPI#collection [\#46](https://github.com/ismasan/oat/pull/46) ([emilesilvis](https://github.com/emilesilvis))
+
+- *Merged pull-request:* add the required rel attribute for Siren sub-entities [\#45](https://github.com/ismasan/oat/pull/45) ([apsoto](https://github.com/apsoto))
+
+- *Closed issue:* is lib/support/class\_attribute necessary? [\#44](https://github.com/ismasan/oat/issues/44)
+
+- *Closed issue:* Oat, Rails Responders and hypermedia mime types [\#50](https://github.com/ismasan/oat/issues/50)
+
+- *Closed issue:* Array serialization [\#54](https://github.com/ismasan/oat/issues/54)
+
+- *Closed issue:* Nested serializers: undefined method [\#56](https://github.com/ismasan/oat/issues/56)
+
+- *Closed issue:* HAL support for multiple link objects per relationship? [\#58](https://github.com/ismasan/oat/issues/58)
+
+- *Closed issue:* Serialize to vanilla JSON using the same serializer class [\#59](https://github.com/ismasan/oat/issues/59)
+
 ## [v0.4.5](https://github.com/ismasan/oat/tree/v0.4.5)
 [Full Changelog](https://github.com/ismasan/oat/compare/v0.4.4...v0.4.5)
 #### 09/07/14
