@@ -74,6 +74,7 @@ describe Oat::Adapters::Siren do
       )
 
       expect(actions.first.fetch(:fields)).to include(
+        :class => ['string'],
         :name => :current_password,
         :type => :password,
         :title => 'enter password:'

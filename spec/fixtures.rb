@@ -46,6 +46,7 @@ module Fixtures
               action.method 'DELETE'
               action.type   'application/json'
               action.field :current_password do |field|
+                field.class 'string'
                 field.type :password
                 field.title 'enter password:'
               end

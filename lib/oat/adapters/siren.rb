@@ -91,7 +91,11 @@ module Oat
           attr_reader :data
 
           def initialize(name)
-            @data = { :name => name }
+            @data = { :name => name, :class => []}
+          end
+
+          def class(value)
+            data[:class] << value
           end
 
           %w(type value title).each do |attribute|
