@@ -121,5 +121,22 @@ describe Oat::Adapters::Siren do
         expect(embedded_managers.size).to be 0
       end
     end
+
+    context 'with multiple rels specified as an array for a single link' do
+      let(:serializer_class) do
+        Class.new(Oat::Serializer) do
+          schema do
+            type 'users'
+            link ['describedby', 'http://rels.foo.bar.com/type'], :href => "http://foo.bar.com/meta/user"
+          end
+        end
+      end
+
+      it 'renders the rels as a Siren-compliant non-nested, flat  array' do
+        expect(hash.fetch(:links)).to include(
+          {:rel=>["describedby", "http://rels.foo.bar.com/type"], :href=>"http://foo.bar.com/meta/user"}
+        )
+      end
+    end
   end
 end
