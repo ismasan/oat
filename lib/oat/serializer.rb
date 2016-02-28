@@ -65,5 +65,51 @@ module Oat
       property name, value
     end
 
+    def link(rel, opts = {})
+      if context[:only] && context[:only][:link]
+        if context[:only][:link].include?(rel)
+          super
+        end
+      else
+        super
+      end
+    end
+
+    def property(key, value)
+      if context[:only] && context[:only][:property]
+        if context[:only][:property].include?(key)
+          super
+        end
+      else
+        super
+      end
+    end
+
+    def entity(name, obj, serializer_class = nil, context_options = {}, &block)
+      if context[:only] && ent = context[:only][:entity]
+        if not ent.class.name == "Hash"
+          raise ArgumentError, ":entity value must be a hash"
+        end
+        if not ent[name].nil?
+          super(name, obj, serializer_class, ent[name], &block)
+        end
+      else
+        super
+      end
+    end
+
+    def entities(name, collection, serializer_class = nil, context_options = {}, &block)
+      if context[:only] && ents = context[:only][:entities]
+        if not ents.class.name == "Hash"
+          raise ArgumentError, ":entities value must be a hash"
+        end
+        if not ents[name].nil?
+          super(name, collection, serializer_class, ents[name], &block)
+        end
+      else
+        super
+      end
+    end
+
   end
 end

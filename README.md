@@ -417,6 +417,30 @@ end
 
 The additional options are merged into the current context before being passed down to the nested serializer.
 
+#### Filtering with :only
+
+The context can contain a special key `:only` which filters on the relations specified with `link`, `property` (and `map_property`, but not `properties do |props| ...`), `entity` and `entities`. An example filtering on all four types:
+
+```ruby
+UserSerializer.new(current_user,
+  only: {
+    link: [:self],
+    property: [:id, :first_name, :last_name],
+    entity: {
+      picture: {}
+    },
+    entities: {
+      posts: {
+        only: {
+          property: [:id, :title]
+        }
+      }
+    }
+  }
+)
+```
+
+
 ### Mixin Rails' routing module
 
 Alternatively, you can mix in Rails routing helpers directly into your serializers.
