@@ -642,7 +642,7 @@ Now http requests that specify the Siren mime type will work as
 expected.
 
 **NOTE**
-The key thing that makes this all hang together is that the
+The key thing that makes this all work together is that the
 object passed to `respond_with` implements a `to_FORMAT` method, where
 `FORMAT` is the symbol used to register the mime type and responder
 (`:siren`).  Without it, Rails will not invoke your responder block.
