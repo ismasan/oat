@@ -22,7 +22,7 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links] << {:rel => [rel]}.merge(opts)
+        data[:links] << {:rel => [rel].flatten}.merge(opts)
       end
 
       def properties(&block)
