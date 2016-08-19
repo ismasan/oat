@@ -346,6 +346,17 @@ class SocialSerializer < Oat::Serializer
 end
 ```
 
+You can specify multiple schema blocks, including across class hierarchies. This allows us to append schema attributes or override previously defined attributes:
+
+```ruby
+class ExtendedUserSerializer < UserSerializer
+  schema do
+    name item.full_name # name property will now by the user's full name
+    property :dob, item.dob # additional date of birth attribute
+  end
+end
+```
+
 ## URLs
 
 Hypermedia is all about the URLs linking your resources together. Oat adapters can have methods to declare links in your entity schema but it's up to your code/framework how to create those links.
