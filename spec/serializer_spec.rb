@@ -93,13 +93,13 @@ describe Oat::Serializer do
       }
 
       it "produces the result of both schema blocks in order" do
-        serializer = child_serializer.new(user1, name: "child_controller")
+        serializer = child_serializer.new(user1, :name => "child_controller")
 
         expect(serializer.to_hash.fetch(:attributes)).to include(
-          special: 'Hello',
-          id: user1.id,
-          id_plus_x: "#{user1.id}_x",
-          inherited: "true",
+          :special => 'Hello',
+          :id => user1.id,
+          :id_plus_x => "#{user1.id}_x",
+          :inherited => "true"
         )
       end
 
