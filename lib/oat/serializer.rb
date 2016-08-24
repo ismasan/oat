@@ -2,11 +2,12 @@ require 'support/class_attribute'
 module Oat
   class Serializer
 
-    class_attribute :_adapter, :logger
+    class_attribute :_adapter, :logger, :schemas
+
+    self.schemas = []
 
     def self.schema(&block)
-      @schema = block if block_given?
-      @schema || Proc.new{}
+      self.schemas += [block] if block_given?
     end
 
     def self.adapter(adapter_class = nil)
@@ -51,7 +52,10 @@ module Oat
 
     def to_hash
       @to_hash ||= (
-        instance_eval(&self.class.schema)
+        self.class.schemas.each do |schema|
+          instance_eval(&schema)
+        end
+
         adapter.to_hash
       )
     end

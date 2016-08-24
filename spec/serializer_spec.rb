@@ -78,6 +78,39 @@ describe Oat::Serializer do
         :self => "http://foo.bar.com/#{user1.id}"
       )
     end
-  end
 
+    context "when multiple schema blocks are specified across a class hierarchy" do
+      let(:child_serializer) {
+        Class.new(@sc) do
+          schema do
+            attribute :id_plus_x, "#{item.id}_x"
+
+            attributes do |attrs|
+              attrs.inherited "true"
+            end
+          end
+        end
+      }
+
+      it "produces the result of both schema blocks in order" do
+        serializer = child_serializer.new(user1, :name => "child_controller")
+
+        expect(serializer.to_hash.fetch(:attributes)).to include(
+          :special => 'Hello',
+          :id => user1.id,
+          :id_plus_x => "#{user1.id}_x",
+          :inherited => "true"
+        )
+      end
+
+      it "does not affect the parent serializer" do
+        serializer = @sc.new(user1, :name => 'some_controller')
+
+        attributes = serializer.to_hash.fetch(:attributes)
+
+        expect(attributes).to_not have_key(:id_plus_x)
+        expect(attributes).to_not have_key(:inherited)
+      end
+    end
+  end
 end

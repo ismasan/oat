@@ -26,6 +26,7 @@ module Oat
 
       if block_given?
         serializer_class = Class.new(serializer.class)
+        serializer_class.schemas = []
         serializer_class.adapter self.class
         s = serializer_class.new(obj, serializer.context.merge(context_options), serializer.adapter_class, serializer.top)
         serializer.instance_exec(obj, s, &block)
