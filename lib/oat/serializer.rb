@@ -44,7 +44,15 @@ module Oat
 
     def method_missing(name, *args, &block)
       if adapter.respond_to?(name)
-        adapter.send(name, *args, &block)
+        self.class.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          private
+
+          def #{name}(*args, &block)
+            adapter.#{name}(*args, &block)
+          end
+        RUBY
+
+        send(name, *args, &block)
       else
         super
       end
