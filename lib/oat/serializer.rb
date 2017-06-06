@@ -1,13 +1,23 @@
 require 'support/class_attribute'
+
 module Oat
   class Serializer
 
-    class_attribute :_adapter, :logger, :schemas
+    class_attribute :_adapter, :logger, :schemas, :schema_methods
 
     self.schemas = []
+    self.schema_methods = []
 
     def self.schema(&block)
-      self.schemas += [block] if block_given?
+      if block_given?
+        schema_method_name = :"schema_block_#{self.schema_methods.count}"
+
+        self.schemas += [block]
+        self.schema_methods += [schema_method_name]
+
+        define_method(schema_method_name, &block)
+        private(schema_method_name)
+      end
     end
 
     def self.adapter(adapter_class = nil)
@@ -34,7 +44,15 @@ module Oat
 
     def method_missing(name, *args, &block)
       if adapter.respond_to?(name)
-        adapter.send(name, *args, &block)
+        self.class.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          private
+
+          def #{name}(*args, &block)
+            adapter.#{name}(*args, &block)
+          end
+        RUBY
+
+        send(name, *args, &block)
       else
         super
       end
@@ -52,8 +70,8 @@ module Oat
 
     def to_hash
       @to_hash ||= (
-        self.class.schemas.each do |schema|
-          instance_eval(&schema)
+        self.class.schema_methods.each do |schema_method_name|
+          send(schema_method_name)
         end
 
         adapter.to_hash
