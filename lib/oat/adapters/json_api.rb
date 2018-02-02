@@ -1,12 +1,4 @@
 # http://jsonapi.org/format/#url-based-json-api
-require 'active_support/inflector'
-require 'active_support/core_ext/string/inflections'
-unless defined?(String.new.pluralize)
-  class String
-    include ActiveSupport::CoreExtensions::String::Inflections
-  end
-end
-
 module Oat
   module Adapters
 
@@ -24,7 +16,7 @@ module Oat
       end
 
       def type(*types)
-        @root_name = types.first.to_s.pluralize.to_sym
+        @root_name = pluralize(types.first.to_s).to_sym
       end
 
       def link(rel, opts = {})
@@ -74,7 +66,7 @@ module Oat
         if ent
           ent_hash = ent.to_hash
           _name = entity_name(name)
-          link_name = _name.to_s.pluralize.to_sym
+          link_name = pluralize(_name.to_s).to_sym
           data[:links][_name] = ent_hash[:id]
 
           entity_hash[link_name] ||= []
@@ -87,7 +79,7 @@ module Oat
       def entities(name, collection, serializer_class = nil, context_options = {}, &block)
         return if collection.nil? || collection.empty?
         _name = entity_name(name)
-        link_name = _name.to_s.pluralize.to_sym
+        link_name = pluralize(_name.to_s).to_sym
         data[:links][link_name] = []
 
         collection.each do |obj|
@@ -155,6 +147,15 @@ module Oat
         ent.to_hash.values.first.first if ent
       end
 
+      PLURAL = /s$/
+
+      def pluralize(str)
+        if str =~ PLURAL
+          str
+        else
+          "#{str}s"
+        end
+      end
     end
   end
 end
