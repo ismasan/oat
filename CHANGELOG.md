@@ -1,5 +1,13 @@
 # Change Log
 
+## [Unreleased](https://github.com/ismasan/oat/tree/HEAD)
+
+[Full Changelog](https://github.com/ismasan/oat/compare/v0.5.1...HEAD)
+
+**Merged pull requests:**
+
+- Remove dependency on ActiveSupport. [\#76](https://github.com/ismasan/oat/pull/76) ([ismasan](https://github.com/ismasan))
+
 ## [v0.5.1](https://github.com/ismasan/oat/tree/v0.5.1) (2017-06-06)
 [Full Changelog](https://github.com/ismasan/oat/compare/v0.5.0...v0.5.1)
 
