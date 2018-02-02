@@ -29,7 +29,6 @@ class Class
     attrs.each do |name|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def self.#{name}() nil end
-          def self.#{name}?() !!#{name} end
 
           def self.#{name}=(val)
             singleton_class.class_eval do
