@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/ismasan/oat/tree/HEAD)
-
-[Full Changelog](https://github.com/ismasan/oat/compare/v0.5.1...HEAD)
+## [v0.5.2](https://github.com/ismasan/oat/tree/v0.5.2) (2018-02-02)
+[Full Changelog](https://github.com/ismasan/oat/compare/v0.5.1...v0.5.2)
 
 **Merged pull requests:**
 
