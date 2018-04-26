@@ -81,7 +81,7 @@ module Oat
           data[:fields] << field.data
         end
 
-        %w(href method title type).each do |attribute|
+        %w(categories href method title type).each do |attribute|
           define_method(attribute) do |value|
             data[attribute.to_sym] = value
           end
