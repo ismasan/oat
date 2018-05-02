@@ -41,12 +41,12 @@ module Fixtures
           if adapter.respond_to?(:action)
             action :close_account do |action|
               action.href "http://foo.bar.com/#{item.id}/close_account"
-              action.class 'danger'
-              action.class 'irreversible'
+              action.klass 'danger'
+              action.klass 'irreversible'
               action.method 'DELETE'
               action.type   'application/json'
               action.field :current_password do |field|
-                field.class 'string'
+                field.klass 'string'
                 field.type :password
                 field.title 'enter password:'
               end

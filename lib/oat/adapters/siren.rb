@@ -70,7 +70,7 @@ module Oat
           @data = { :name => name, :class => [], :fields => [] }
         end
 
-        def class(value)
+        def klass(value)
           data[:class] << value
         end
 
@@ -94,7 +94,7 @@ module Oat
             @data = { :name => name, :class => []}
           end
 
-          def class(value)
+          def klass(value)
             data[:class] << value
           end
 
