@@ -70,7 +70,7 @@ module Oat
           @data = { :name => name, :class => [], :fields => [] }
         end
 
-        def class(value)
+        def klass(value)
           data[:class] << value
         end
 
@@ -91,7 +91,11 @@ module Oat
           attr_reader :data
 
           def initialize(name)
-            @data = { :name => name }
+            @data = { :name => name, :class => []}
+          end
+
+          def klass(value)
+            data[:class] << value
           end
 
           %w(type value title).each do |attribute|
