@@ -98,7 +98,7 @@ module Oat
             data[:class] << value
           end
 
-          %w(category required type value title).each do |attribute|
+          %w(category type value title).each do |attribute|
             define_method(attribute) do |value|
               data[attribute.to_sym] = value
             end
