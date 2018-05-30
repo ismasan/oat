@@ -21,6 +21,10 @@ module Oat
         data[:class] = types
       end
 
+      def title(title)
+        data[:title] = title
+      end
+
       def link(rel, opts = {})
         data[:links] << {:rel => [rel].flatten}.merge(opts)
       end
@@ -71,7 +75,7 @@ module Oat
         end
 
         def klass(value)
-          data[:class] << value
+          data[:class].concat(Array(value))
         end
 
         def field(name, &block)
@@ -95,7 +99,7 @@ module Oat
           end
 
           def klass(value)
-            data[:class] << value
+            data[:class].concat(Array(value))
           end
 
           %w(category type value title).each do |attribute|
