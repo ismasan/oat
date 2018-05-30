@@ -12,6 +12,8 @@ describe Oat::Adapters::Siren do
     it 'produces a Siren-compliant hash' do
       expect(hash.fetch(:class)).to match_array(['user'])
 
+      expect(hash.fetch(:title)).to eq('This guy')
+
       expect(hash.fetch(:properties)).to include(
         :id => user.id,
         :name => user.name,
