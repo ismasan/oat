@@ -46,9 +46,7 @@ module Oat
           ent.rel(name)
           ent_hash = ent.to_hash
 
-          unless data[:entities].include? ent_hash
-            data[:entities] << ent_hash
-          end
+          data[:entities] << ent_hash
         end
       end
 
