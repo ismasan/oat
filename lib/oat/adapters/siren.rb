@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 # https://github.com/kevinswiber/siren
 module Oat
   module Adapters
     class Siren < Oat::Adapter
-
       def initialize(*args)
         super
         data[:links] = []
@@ -12,13 +13,13 @@ module Oat
 
       # Sub-Entities have a required rel attribute
       # https://github.com/kevinswiber/siren#rel
-      def rel(rels)
+      def rel(*rels)
         # rel must be an array.
         data[:rel] = Array(rels)
       end
 
       def type(*types)
-        data[:class] = types
+        data[:class] = Array(types)
       end
 
       def title(title)
@@ -26,7 +27,7 @@ module Oat
       end
 
       def link(rel, opts = {})
-        data[:links] << {:rel => [rel].flatten}.merge(opts)
+        data[:links] << { rel: Array(rel) }.merge(opts)
       end
 
       def properties(&block)
@@ -37,7 +38,7 @@ module Oat
         data[:properties][key] = value
       end
 
-      alias_method :meta, :property
+      alias meta property
 
       def entity(name, obj, serializer_class = nil, context_options = {}, &block)
         ent = serializer_from_block_or_class(obj, serializer_class, context_options, &block)
@@ -56,11 +57,11 @@ module Oat
         end
       end
 
-      alias_method :collection, :entities
+      alias collection entities
 
-      def action(name, &block)
+      def action(name)
         action = Action.new(name)
-        block.call(action)
+        yield(action)
 
         data[:actions] << action.data
       end
@@ -69,21 +70,21 @@ module Oat
         attr_reader :data
 
         def initialize(name)
-          @data = { :name => name, :class => [], :fields => [] }
+          @data = { name: name, class: [], fields: [] }
         end
 
         def klass(value)
           data[:class].concat(Array(value))
         end
 
-        def field(name, &block)
+        def field(name)
           field = Field.new(name)
-          block.call(field)
+          yield(field)
 
           data[:fields] << field.data
         end
 
-        %w(categories href method title type).each do |attribute|
+        %w[categories href method title type].each do |attribute|
           define_method(attribute) do |value|
             data[attribute.to_sym] = value
           end
@@ -93,21 +94,20 @@ module Oat
           attr_reader :data
 
           def initialize(name)
-            @data = { :name => name, :class => []}
+            @data = { name: name, class: [] }
           end
 
           def klass(value)
             data[:class].concat(Array(value))
           end
 
-          %w(category type value title).each do |attribute|
+          %w[category type value title].each do |attribute|
             define_method(attribute) do |value|
               data[attribute.to_sym] = value
             end
           end
         end
       end
-
     end
   end
 end
