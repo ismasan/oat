@@ -18,10 +18,12 @@ module Oat
       @schema.field(:properties).type(:object).schema(@props_schema)
     end
 
-    def property(key, from: nil, type: nil)
+    def property(key, from: nil, type: nil, example: nil)
       field = props_schema.field(key)
       field.meta(from: from) if from
       field.type(type) if type
+      ex = example ? example : "example #{key}"
+      field.meta(example: ex)
       field
     end
   end
@@ -38,6 +40,10 @@ module Oat
     def self.schema(&block)
       _definition.instance_eval(&block)
       _definition
+    end
+
+    def self.example
+      Hal.call(_definition.schema.walk(:example).output)
     end
 
     def initialize(item)
