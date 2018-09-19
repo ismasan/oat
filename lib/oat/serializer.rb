@@ -1,6 +1,8 @@
 require 'parametric'
 
 module Oat
+  NoMethodError = Class.new(::NoMethodError)
+
   class Hal
     def self.call(data)
       data[:properties]
@@ -59,10 +61,18 @@ module Oat
       out = {}
       out[:properties] = definition.props_schema.fields.each_with_object({}) do |(key, field), obj|
         src = field.meta_data[:from] || key
-        obj[key] = item.public_send(src)
+        obj[key] = invoke(item, src)
       end
 
       out
+    end
+
+    def invoke(item, method_name)
+      if item.respond_to?(method_name)
+        item.public_send(method_name)
+      else
+        raise NoMethodError, "#{self.class.name} expects #{item.inspect} to respond to ##{method_name}"
+      end
     end
   end
 end

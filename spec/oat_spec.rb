@@ -3,7 +3,7 @@ RSpec.describe Oat do
     expect(Oat::VERSION).not_to be nil
   end
 
-  it "works" do
+  it "maps simple HAL properties" do
     f1 = double(name: 'F1')
     f2 = double(name: 'F2')
 
@@ -25,5 +25,22 @@ RSpec.describe Oat do
 
     expect(result[:name]).to eq 'ismael'
     expect(result[:age]).to eq 40
+  end
+
+  it "raises useful exception if item doesn't respond to expected method" do
+    user = double("Item",
+      name: 'ismael',
+    )
+
+    user_serializer = Class.new(Oat::Serializer) do
+      schema do
+        property :name, from: :name
+        property :age, type: :integer
+      end
+    end
+
+    expect {
+      user_serializer.serialize(user)
+    }.to raise_error Oat::NoMethodError
   end
 end
