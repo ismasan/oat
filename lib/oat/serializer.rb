@@ -29,8 +29,16 @@ module Oat
   end
 
   class Serializer
-    def self.serialize(item)
-      new(item).to_h
+    def self.adapter(adpt = nil)
+      if adpt
+        @adapter = adpt
+      end
+
+      @adapter || Hal
+    end
+
+    def self.serialize(item, adapter: self.adapter)
+      new(item, adapter: adapter).to_h
     end
 
     def self._definition
@@ -42,12 +50,13 @@ module Oat
       _definition
     end
 
-    def self.example
-      Hal.call(_definition.schema.walk(:example).output)
+    def self.example(adapter: self.adapter)
+      adapter.call(_definition.schema.walk(:example).output)
     end
 
-    def initialize(item)
+    def initialize(item, adapter: self.class.adapter)
       @item = item
+      @adapter = adapter
     end
 
     def to_h
@@ -57,11 +66,11 @@ module Oat
         raise "has errors #{result.errors.inspect}"
       end
 
-      Hal.call(result.output)
+      adapter.call(result.output)
     end
 
     private
-    attr_reader :item
+    attr_reader :item, :adapter
 
     def coerce(item, definition)
       out = {}
