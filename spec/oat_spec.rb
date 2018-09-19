@@ -1,7 +1,7 @@
 RSpec.describe Oat do
-  let(:f1) { double(name: 'F1') }
-  let(:f2) { double(name: 'F2') }
-  let(:account) { double(id: 111) }
+  let(:f1) { double('Friend1', name: 'F1') }
+  let(:f2) { double('Friend2', name: 'F2') }
+  let(:account) { double('Account', id: 111) }
   let(:user) {
     double("Item",
       name: 'ismael',
@@ -35,6 +35,42 @@ RSpec.describe Oat do
       expect(friends.size).to eq 2
       expect(friends.first[:name]).to eq 'F1'
     end
+  end
+
+  it "omits keys if :if option resolves to falsey" do
+    allow(user).to receive(:shows_name?).and_return false
+    allow(f1).to receive(:shows_name?).and_return false
+    allow(f2).to receive(:shows_name?).and_return true
+
+    user_serializer = Class.new(Oat::Serializer) do
+      schema do
+        property :name, from: :name, if: :shows_name?
+        property :age, type: :integer
+        entities :friends, from: :friends, if: :any? do |s|
+          s.property :name, if: :shows_name?
+        end
+      end
+    end
+
+    result = user_serializer.serialize(user)
+
+    expect(result.key?(:name)).to be false
+    expect(result[:age]).to eq 40
+    result[:_embedded][:friends].tap do |friends|
+      expect(friends.first.key?(:name)).to be false
+      expect(friends.last[:name]).to eq 'F2'
+    end
+
+    allow(user).to receive(:shows_name?).and_return true
+
+    result = user_serializer.serialize(user)
+
+    expect(result[:name]).to eq 'ismael'
+
+    allow(user).to receive(:friends).and_return [] # #any? == false
+    result = user_serializer.serialize(user)
+
+    expect(result[:_embedded].key?(:friends)).to be false
   end
 
   it "maps sub-entities with named sub-serializer" do

@@ -30,37 +30,37 @@ module Oat
       @schema.field(:entities).type(:object).schema(@entities_schema)
     end
 
-    def property(key, from: nil, type: nil, example: nil, decorate: nil)
+    def property(key, opts = {})
       field = props_schema.field(key)
-      field.meta(from: from || key)
-      field.meta(decorate: decorate) if decorate
-      field.type(type) if type
-      ex = example ? example : "example #{key}"
+      field.meta(from: opts.fetch(:from, key), if: opts[:if])
+      field.meta(decorate: opts[:decorate]) if opts[:decorate]
+      field.type(opts[:type]) if opts[:type]
+      ex = opts.fetch(:example, "example #{key}")
       field.meta(example: ex)
       field
     end
 
-    def entities(key, from: nil, with: nil, &block)
-      define_entity key, :array, from: from, with: with, &block
+    def entities(key, opts = {}, &block)
+      define_entity key, :array, opts, &block
     end
 
-    def entity(key, from: nil, with: nil, &block)
-      define_entity key, :object, from: from, with: with, &block
+    def entity(key, opts = {}, &block)
+      define_entity key, :object, opts, &block
     end
 
     private
 
-    def define_entity(key, type, from: nil, with: nil, &block)
+    def define_entity(key, type, opts = {}, &block)
       field = entities_schema.field(key).type(type)
-      field.meta(from: from || key)
-      if !with && !block_given?
+      field.meta(from: opts.fetch(:from, key), if: opts[:if])
+      if !opts[:with] && !block_given?
         raise "entities require a schema definition as a block or serializer class"
       elsif block_given? # sub-serialier from block
         sub = Class.new(Serializer)
         block.call sub._definition
         field.schema(sub.schema).meta(with: sub)
       else
-        field.schema(with.schema).meta(with: with)
+        field.schema(opts[:with].schema).meta(with: opts[:with])
       end
 
       field
@@ -121,23 +121,38 @@ module Oat
     def coerce(item, definition)
       out = {}
       out[:properties] = definition.props_schema.fields.each_with_object({}) do |(key, field), obj|
-        obj[key] = invoke(item, field)
+        obj[key] = invoke(item, field) if include_field?(item, field)
       end
 
       out[:entities] = definition.entities_schema.fields.each_with_object({}) do |(key, field), obj|
         src = invoke(item, field)
-        sub_out = if field.meta_data[:type] == :array
-          [src].flatten.map do |sr|
-            field.meta_data[:with].new(sr, adapter: adapter, context: context).resolve.output
+        if field.meta_data[:type] == :array
+          src = [src].flatten
+          if include_field?(src, field)
+            obj[key] = src.map do |sr|
+              sub_output(field.meta_data[:with], sr)
+            end
           end
-        else
-          field.meta_data[:with].new(src, adapter: adapter, context: context).resolve.output
+        elsif include_field?(src, field)
+          obj[key] = sub_output(field.meta_data[:with], src)
         end
-
-        obj[key] = sub_out
       end
 
       out
+    end
+
+    def sub_output(serializer_klass, sub_item)
+      serializer_klass.new(sub_item, adapter: adapter, context: context).resolve.output
+    end
+
+    def include_field?(item, field)
+      condition = field.meta_data[:if]
+      case condition
+      when Symbol
+        item.public_send(condition)
+      else
+        true
+      end
     end
 
     def invoke(item, field)
