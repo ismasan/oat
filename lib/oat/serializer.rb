@@ -13,9 +13,13 @@ module Oat
         end
       end
 
-      data[:properties].merge(
-        _embedded: ents
-      )
+      if ents.any?
+        data[:properties].merge(
+          _embedded: ents
+        )
+      else
+        data[:properties]
+      end
     end
   end
 

@@ -46,6 +46,9 @@ RSpec.describe Oat do
       schema do
         property :name, from: :name, if: :shows_name?
         property :age, type: :integer
+        entity :account do |s|
+          s.property :id
+        end
         entities :friends, from: :friends, if: :any? do |s|
           s.property :name, if: :shows_name?
         end
