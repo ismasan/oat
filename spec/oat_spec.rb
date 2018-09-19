@@ -210,7 +210,7 @@ RSpec.describe Oat do
   end
 
   context "with custom presenters" do
-    it "uses presenters if available" do
+    it "uses presenter blocks if available" do
       user_serializer = Class.new(Oat::Serializer) do
         schema do
           property :name, from: :name
@@ -236,6 +236,27 @@ RSpec.describe Oat do
         expect(friends.size).to eq 2
         expect(friends.first[:name]).to eq 'F1'
       end
+    end
+
+    it "uses named presenters if available" do
+      user_presenter = Class.new(Oat::DefaultPresenter) do
+        def name
+          "Custom: #{context[:title]} #{item.name}"
+        end
+      end
+
+      user_serializer = Class.new(Oat::Serializer) do
+        schema do
+          property :name, from: :name
+          property :age, type: :integer
+        end
+
+        present user_presenter
+      end
+
+      result = user_serializer.serialize(user, context: {title: 'Mr.'})
+
+      expect(result[:name]).to eq 'Custom: Mr. ismael'
     end
   end
 

@@ -115,7 +115,7 @@ module Oat
       @presenters ||= {}
     end
 
-    def self.present(type = :default, presenter = nil, &block)
+    def self.present(presenter = nil, type: :default, &block)
       if !presenter && !block_given?
         raise "Serializer.present expects either a block or a presenter class"
       elsif block_given?
