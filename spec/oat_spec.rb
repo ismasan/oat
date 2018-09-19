@@ -63,6 +63,40 @@ RSpec.describe Oat do
     end
   end
 
+  it "uses decorator methods and context object, if available" do
+    context = {title: "Mr/Mrs."}
+
+    base_serializer = Class.new(Oat::Serializer) do
+      def with_title(name)
+        "#{context[:title]} #{name}"
+      end
+    end
+
+    friend_serializer = Class.new(base_serializer) do
+      schema do
+        property :friend_name, from: :name, decorate: :with_title
+      end
+    end
+
+    user_serializer = Class.new(base_serializer) do
+      schema do
+        property :name, from: :name, decorate: :with_title
+        property :age, type: :integer
+        entities :friends, with: friend_serializer
+      end
+    end
+
+    result = user_serializer.serialize(user, context: context)
+
+    expect(result[:name]).to eq 'Mr/Mrs. ismael'
+    expect(result[:age]).to eq 40
+
+    result[:_embedded][:friends].tap do |friends|
+      expect(friends.size).to eq 2
+      expect(friends.first[:friend_name]).to eq 'Mr/Mrs. F1'
+    end
+  end
+
   it "uses custom class-level adapter" do
     example_adapter = Proc.new do |data|
       {

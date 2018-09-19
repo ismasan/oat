@@ -30,9 +30,10 @@ module Oat
       @schema.field(:entities).type(:object).schema(@entities_schema)
     end
 
-    def property(key, from: nil, type: nil, example: nil)
+    def property(key, from: nil, type: nil, example: nil, decorate: nil)
       field = props_schema.field(key)
       field.meta(from: from || key)
+      field.meta(decorate: decorate) if decorate
       field.type(type) if type
       ex = example ? example : "example #{key}"
       field.meta(example: ex)
@@ -75,8 +76,8 @@ module Oat
       @adapter || Hal
     end
 
-    def self.serialize(item, adapter: self.adapter)
-      new(item, adapter: adapter).to_h
+    def self.serialize(item, adapter: self.adapter, context: nil)
+      new(item, adapter: adapter, context: context).to_h
     end
 
     def self._definition
@@ -92,9 +93,10 @@ module Oat
       adapter.call(_definition.schema.walk(:example).output)
     end
 
-    def initialize(item, adapter: self.class.adapter)
+    def initialize(item, adapter: self.class.adapter, context: nil)
       @item = item
       @adapter = adapter
+      @context = context
     end
 
     def to_h
@@ -114,22 +116,22 @@ module Oat
     end
 
     private
-    attr_reader :item, :adapter
+    attr_reader :item, :adapter, :context
 
     def coerce(item, definition)
       out = {}
       out[:properties] = definition.props_schema.fields.each_with_object({}) do |(key, field), obj|
-        obj[key] = invoke(item, field.meta_data[:from])
+        obj[key] = invoke(item, field)
       end
 
       out[:entities] = definition.entities_schema.fields.each_with_object({}) do |(key, field), obj|
-        src = invoke(item, field.meta_data[:from])
+        src = invoke(item, field)
         sub_out = if field.meta_data[:type] == :array
           [src].flatten.map do |sr|
-            field.meta_data[:with].new(sr, adapter: adapter).resolve.output
+            field.meta_data[:with].new(sr, adapter: adapter, context: context).resolve.output
           end
         else
-          field.meta_data[:with].new(src, adapter: adapter).resolve.output
+          field.meta_data[:with].new(src, adapter: adapter, context: context).resolve.output
         end
 
         obj[key] = sub_out
@@ -138,9 +140,16 @@ module Oat
       out
     end
 
-    def invoke(item, method_name)
+    def invoke(item, field)
+      method_name = field.meta_data[:from]
       if item.respond_to?(method_name)
-        item.public_send(method_name)
+        value = item.public_send(method_name)
+        decorator = field.meta_data[:decorate]
+        if decorator && respond_to?(decorator)
+          public_send(decorator, value)
+        else
+          value
+        end
       else
         raise NoMethodError, "#{self.class.name} expects #{item.inspect} to respond to ##{method_name}"
       end
