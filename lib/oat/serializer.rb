@@ -2,13 +2,8 @@ require 'parametric'
 
 module Oat
   class Hal
-    def self.call(item, definition)
-      out = {}
-      definition.props_schema.fields.each_with_object(out) do |(key, field), obj|
-        src = field.meta_data[:from] || field.key
-        obj[field.key] = item.public_send(src)
-      end
-      out
+    def self.call(data)
+      data[:properties]
     end
   end
 
@@ -21,9 +16,10 @@ module Oat
       @schema.field(:properties).type(:object).schema(@props_schema)
     end
 
-    def property(key, from: nil)
+    def property(key, from: nil, type: nil)
       field = props_schema.field(key)
       field.meta(from: from) if from
+      field.type(type) if type
       field
     end
   end
@@ -47,10 +43,26 @@ module Oat
     end
 
     def to_h
-      Hal.call(item, self.class._definition)
+      data = coerce(item, self.class._definition)
+      result = self.class._definition.schema.resolve(data)
+      if result.errors.any?
+        raise "has errors #{result.errors.inspect}"
+      end
+
+      Hal.call(result.output)
     end
 
     private
     attr_reader :item
+
+    def coerce(item, definition)
+      out = {}
+      out[:properties] = definition.props_schema.fields.each_with_object({}) do |(key, field), obj|
+        src = field.meta_data[:from] || key
+        obj[key] = item.public_send(src)
+      end
+
+      out
+    end
   end
 end

@@ -9,7 +9,7 @@ RSpec.describe Oat do
 
     user = double("Item",
       name: 'ismael',
-      age: 40,
+      age: '40',
       friends: [f1, f2]
     )
 
@@ -17,7 +17,7 @@ RSpec.describe Oat do
     user_serializer = Class.new(Oat::Serializer) do
       schema do
         property :name, from: :name
-        property :age
+        property :age, type: :integer
       end
     end
 
