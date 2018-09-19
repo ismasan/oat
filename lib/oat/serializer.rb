@@ -40,23 +40,17 @@ module Oat
     end
 
     def entities(key, from: nil, with: nil, &block)
-      field = entities_schema.field(key).type(:array)
-      field.meta(from: from || key)
-      if !with && !block_given?
-        raise "entities require a schema definition as a block or serializer class"
-      elsif block_given? # sub-serialier from block
-        sub = Class.new(Serializer)
-        block.call sub._definition
-        field.schema(sub.schema).meta(with: sub)
-      else
-        field.schema(with.schema).meta(with: with)
-      end
-
-      field
+      define_entity key, :array, from: from, with: with, &block
     end
 
     def entity(key, from: nil, with: nil, &block)
-      field = entities_schema.field(key).type(:object)
+      define_entity key, :object, from: from, with: with, &block
+    end
+
+    private
+
+    def define_entity(key, type, from: nil, with: nil, &block)
+      field = entities_schema.field(key).type(type)
       field.meta(from: from || key)
       if !with && !block_given?
         raise "entities require a schema definition as a block or serializer class"
