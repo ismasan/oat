@@ -3,6 +3,20 @@ require 'parametric'
 module Oat
   NoMethodError = Class.new(::NoMethodError)
 
+  class DefaultPresenter < SimpleDelegator
+    def initialize(item, context)
+      super item
+      @context = context
+    end
+
+    private
+    attr_reader :context
+
+    def item
+      __getobj__
+    end
+  end
+
   class Hal
     def self.call(data)
       ents = data[:entities].each_with_object({}) do |(key, val), obj|
@@ -97,6 +111,21 @@ module Oat
       adapter.call(_definition.schema.walk(:example).output)
     end
 
+    def self.presenters
+      @presenters ||= {}
+    end
+
+    def self.present(type = :default, presenter = nil, &block)
+      if !presenter && !block_given?
+        raise "Serializer.present expects either a block or a presenter class"
+      elsif block_given?
+        pr = Class.new(DefaultPresenter, &block)
+        presenters[type] = pr
+      else
+        presenters[type] = presenter
+      end
+    end
+
     def initialize(item, adapter: self.class.adapter, context: nil)
       @item = item
       @adapter = adapter
@@ -160,6 +189,7 @@ module Oat
     end
 
     def invoke(item, field)
+      item = present(item)
       method_name = field.meta_data[:from]
       if item.respond_to?(method_name)
         value = item.public_send(method_name)
@@ -171,6 +201,14 @@ module Oat
         end
       else
         raise NoMethodError, "#{self.class.name} expects #{item.inspect} to respond to ##{method_name}"
+      end
+    end
+
+    def present(item)
+      if pr = self.class.presenters[:default]
+        pr.new(item, context)
+      else
+        item
       end
     end
   end
