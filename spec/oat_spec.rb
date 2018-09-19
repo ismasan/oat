@@ -1,11 +1,13 @@
 RSpec.describe Oat do
   let(:f1) { double(name: 'F1') }
   let(:f2) { double(name: 'F2') }
+  let(:account) { double(id: 111) }
   let(:user) {
     double("Item",
       name: 'ismael',
       age: '40',
-      friends: [f1, f2]
+      friends: [f1, f2],
+      account: account,
     )
   }
 
@@ -13,11 +15,14 @@ RSpec.describe Oat do
     expect(Oat::VERSION).not_to be nil
   end
 
-  it "maps simple HAL properties" do
+  it "maps full HAL entities and sub-entities" do
     user_serializer = Class.new(Oat::Serializer) do
       schema do
         property :name, from: :name
         property :age, type: :integer
+        entities :friends, from: :friends do |s|
+          s.property :name
+        end
       end
     end
 
@@ -25,6 +30,37 @@ RSpec.describe Oat do
 
     expect(result[:name]).to eq 'ismael'
     expect(result[:age]).to eq 40
+
+    result[:_embedded][:friends].tap do |friends|
+      expect(friends.size).to eq 2
+      expect(friends.first[:name]).to eq 'F1'
+    end
+  end
+
+  it "maps sub-entities with named sub-serializer" do
+    friend_serializer = Class.new(Oat::Serializer) do
+      schema do
+        property :friend_name, from: :name
+      end
+    end
+
+    user_serializer = Class.new(Oat::Serializer) do
+      schema do
+        property :name, from: :name
+        property :age, type: :integer
+        entities :friends, with: friend_serializer
+      end
+    end
+
+    result = user_serializer.serialize(user)
+
+    expect(result[:name]).to eq 'ismael'
+    expect(result[:age]).to eq 40
+
+    result[:_embedded][:friends].tap do |friends|
+      expect(friends.size).to eq 2
+      expect(friends.first[:friend_name]).to eq 'F1'
+    end
   end
 
   it "uses custom class-level adapter" do
@@ -66,6 +102,38 @@ RSpec.describe Oat do
 
     expect(result[:props][:name]).to eq 'ismael'
     expect(result[:props][:age]).to eq 40
+  end
+
+  it "maps full entities and sub-entities with custom adapter" do
+    example_adapter = Proc.new do |data|
+      data
+    end
+
+    user_serializer = Class.new(Oat::Serializer) do
+      adapter example_adapter
+
+      schema do
+        property :name, from: :name
+        property :age, type: :integer
+        entity :account do |s|
+          s.property :account_id, from: :id
+        end
+
+        entities :friends, from: :friends do |s|
+          s.property :name
+        end
+      end
+    end
+
+    result = user_serializer.serialize(user)
+
+    expect(result[:properties][:name]).to eq 'ismael'
+    expect(result[:properties][:age]).to eq 40
+
+    result[:entities][:friends].tap do |friends|
+      expect(friends.size).to eq 2
+      expect(friends.first[:properties][:name]).to eq 'F1'
+    end
   end
 
   context "generating example outputs" do
