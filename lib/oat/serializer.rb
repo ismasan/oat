@@ -1,4 +1,5 @@
 require 'parametric'
+require 'delegate' # needed in older Rubies for SimpleDelegator
 
 module Oat
   NoMethodError = Class.new(::NoMethodError)
