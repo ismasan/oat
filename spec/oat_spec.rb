@@ -258,6 +258,35 @@ RSpec.describe Oat do
 
       expect(result[:name]).to eq 'Custom: Mr. ismael'
     end
+
+    it "can switch presenters by item type" do
+      user_klass1 = Struct.new(:name)
+      user_klass2 = Struct.new(:name)
+
+      user_serializer = Class.new(Oat::Serializer) do
+        schema do
+          property :name, from: :name
+        end
+
+        present do
+          def name
+            "Custom: #{context[:title]} #{item.name}"
+          end
+        end
+
+        present type: user_klass1 do
+          def name
+            "Special: #{item.name}"
+          end
+        end
+      end
+
+      result = user_serializer.serialize(user_klass1.new("Joe"), context: {title: 'Mr.'})
+      expect(result[:name]).to eq 'Special: Joe'
+
+      result = user_serializer.serialize(user_klass2.new("Joan"), context: {title: 'Mrs.'})
+      expect(result[:name]).to eq 'Custom: Mrs. Joan'
+    end
   end
 
   context "generating example outputs" do

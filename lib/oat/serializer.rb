@@ -205,7 +205,10 @@ module Oat
     end
 
     def present(item)
-      if pr = self.class.presenters[:default]
+      _, pr = self.class.presenters.find{|(type, p)| type === item}
+      pr = self.class.presenters[:default] unless pr
+
+      if pr
         pr.new(item, context)
       else
         item
