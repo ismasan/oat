@@ -18,18 +18,29 @@ RSpec.describe Oat do
   it "maps full HAL entities and sub-entities" do
     user_serializer = Class.new(Oat::Serializer) do
       schema do
+        link :account, :account_url, method: :get, title: "an account"
         property :name, from: :name
         property :age, type: :integer
         entities :friends, from: :friends do |s|
           s.property :name
         end
       end
+
+      present do
+        def account_url
+          "#{context[:host]}/accounts/#{item.account.id}"
+        end
+      end
     end
 
-    result = user_serializer.serialize(user)
+    result = user_serializer.serialize(user, context: {host: 'https://api.com'})
 
     expect(result[:name]).to eq 'ismael'
     expect(result[:age]).to eq 40
+
+    result[:_links].tap do |links|
+      expect(links[:account][:href]).to eq 'https://api.com/accounts/111'
+    end
 
     result[:_embedded][:friends].tap do |friends|
       expect(friends.size).to eq 2

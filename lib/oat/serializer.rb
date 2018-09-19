@@ -28,25 +28,33 @@ module Oat
         end
       end
 
+      out = data[:properties].dup
+
+      if data[:links].any?
+        out[:_links] = data[:links]
+      end
+
       if ents.any?
-        data[:properties].merge(
+        out.merge(
           _embedded: ents
         )
       else
-        data[:properties]
+        out
       end
     end
   end
 
   class Definition
-    attr_reader :schema, :props_schema, :entities_schema
+    attr_reader :schema, :props_schema, :entities_schema, :links_schema
 
     def initialize
       @schema = Parametric::Schema.new
       @props_schema = Parametric::Schema.new
       @entities_schema = Parametric::Schema.new
+      @links_schema = Parametric::Schema.new
       @schema.field(:properties).type(:object).schema(@props_schema)
       @schema.field(:entities).type(:object).schema(@entities_schema)
+      @schema.field(:links).type(:object).schema(@links_schema)
     end
 
     def property(key, opts = {})
@@ -65,6 +73,10 @@ module Oat
 
     def entity(key, opts = {}, &block)
       define_entity key, :object, opts, &block
+    end
+
+    def link(rel_name, href_source, opts = {})
+      links_schema.field(rel_name).type(:object).meta(from: href_source, link_options: opts)
     end
 
     private
@@ -154,6 +166,12 @@ module Oat
 
     def coerce(item, definition)
       out = {}
+      out[:links] = definition.links_schema.fields.each_with_object({}) do |(key, field), obj|
+        href = invoke(item, field)
+        opts = field.meta_data.fetch(:link_options, {})
+        obj[key] = opts.merge(href: href)
+      end
+
       out[:properties] = definition.props_schema.fields.each_with_object({}) do |(key, field), obj|
         obj[key] = invoke(item, field) if include_field?(item, field)
       end
