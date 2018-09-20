@@ -75,8 +75,17 @@ module Oat
       define_entity key, :object, opts, &block
     end
 
-    def link(rel_name, href_source, opts = {})
-      links_schema.field(rel_name).type(:object).meta(from: href_source, link_options: opts)
+    def link(rel_name, opts = {})
+      field = links_schema.field(rel_name).type(:object)
+      from = opts.delete(:from)
+      helper = opts.delete(:helper)
+      if !from && !helper
+        raise "link '#{rel_name}' must be defined with either :from or :helper options"
+      end
+
+      field.meta(from: from) if from
+      field.meta(helper: helper) if helper
+      field.meta(link_options: opts)
     end
 
     private
