@@ -117,20 +117,20 @@ RSpec.describe Oat do
     context = {title: "Mr/Mrs."}
 
     base_serializer = Class.new(Oat::Serializer) do
-      def with_title(name)
-        "#{context[:title]} #{name}"
+      def with_title(item)
+        "#{context[:title]} #{item.name}"
       end
     end
 
     friend_serializer = Class.new(base_serializer) do
       schema do
-        property :friend_name, from: :name, decorate: :with_title
+        property :friend_name, decorate: :with_title
       end
     end
 
     user_serializer = Class.new(base_serializer) do
       schema do
-        property :name, from: :name, decorate: :with_title
+        property :name, decorate: :with_title
         property :age, type: :integer
         entities :friends, with: friend_serializer
       end

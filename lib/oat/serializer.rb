@@ -209,15 +209,18 @@ module Oat
 
     def invoke(item, field)
       item = present(item)
+      decorator = field.meta_data[:decorate]
+      if decorator
+        if respond_to?(decorator)
+          return public_send(decorator, item)
+        else
+          raise NoMethodError, "#{self.class.name} is expected to respond to ##{decorator}"
+        end
+      end
+
       method_name = field.meta_data[:from]
       if item.respond_to?(method_name)
-        value = item.public_send(method_name)
-        decorator = field.meta_data[:decorate]
-        if decorator && respond_to?(decorator)
-          public_send(decorator, value)
-        else
-          value
-        end
+        return item.public_send(method_name)
       else
         raise NoMethodError, "#{self.class.name} expects #{item.inspect} to respond to ##{method_name}"
       end
