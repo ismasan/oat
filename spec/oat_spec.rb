@@ -313,6 +313,9 @@ RSpec.describe Oat do
           link :account, helper: :account_url, method: :get, title: "an account", example: 'https://example.com/accounts/1'
           property :name, from: :name, example: 'Joan'
           property :age, type: :integer, example: 45
+          entity :account do |s|
+            s.property :id, type: :integer, example: 123
+          end
         end
 
         def account_url(item)
@@ -325,6 +328,7 @@ RSpec.describe Oat do
       result = user_serializer.example
       expect(result[:name]).to eq 'Joan'
       expect(result[:age]).to eq 45
+      expect(result[:_embedded][:account][:id]).to eq 123
       result[:_links][:account].tap do |link|
         expect(link[:href]).to eq 'https://example.com/accounts/1'
         expect(link[:method]).to eq :get
