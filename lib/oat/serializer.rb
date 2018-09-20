@@ -60,7 +60,7 @@ module Oat
     def property(key, opts = {})
       field = props_schema.field(key)
       field.meta(from: opts.fetch(:from, key), if: opts[:if])
-      field.meta(decorate: opts[:decorate]) if opts[:decorate]
+      field.meta(helper: opts[:helper]) if opts[:helper]
       field.type(opts[:type]) if opts[:type]
       ex = opts.fetch(:example, "example #{key}")
       field.meta(example: ex)
@@ -209,12 +209,12 @@ module Oat
 
     def invoke(item, field)
       item = present(item)
-      decorator = field.meta_data[:decorate]
-      if decorator
-        if respond_to?(decorator)
-          return public_send(decorator, item)
+      helper = field.meta_data[:helper]
+      if helper
+        if respond_to?(helper)
+          return public_send(helper, item)
         else
-          raise NoMethodError, "#{self.class.name} is expected to respond to ##{decorator}"
+          raise NoMethodError, "#{self.class.name} is expected to respond to ##{helper}"
         end
       end
 

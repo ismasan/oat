@@ -124,13 +124,13 @@ RSpec.describe Oat do
 
     friend_serializer = Class.new(base_serializer) do
       schema do
-        property :friend_name, decorate: :with_title
+        property :friend_name, helper: :with_title
       end
     end
 
     user_serializer = Class.new(base_serializer) do
       schema do
-        property :name, decorate: :with_title
+        property :name, helper: :with_title
         property :age, type: :integer
         entities :friends, with: friend_serializer
       end
