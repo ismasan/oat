@@ -79,12 +79,14 @@ module Oat
       field = links_schema.field(rel_name).type(:object)
       from = opts.delete(:from)
       helper = opts.delete(:helper)
+      example = opts.delete(:example)
       if !from && !helper
         raise "link '#{rel_name}' must be defined with either :from or :helper options"
       end
 
       field.meta(from: from) if from
       field.meta(helper: helper) if helper
+      field.meta(example: example) if example
       field.meta(link_options: opts)
     end
 
@@ -133,7 +135,13 @@ module Oat
     end
 
     def self.example(adapter: self.adapter)
-      adapter.call(_definition.schema.walk(:example).output)
+      out = _definition.schema.walk(:example).output
+      out[:links] = _definition.links_schema.walk do |field|
+        href = field.meta_data[:example] || "https://api.com/#{field.key}"
+        field.meta_data.fetch(:link_options, {}).merge(href: href)
+      end.output
+
+      adapter.call(out)
     end
 
     def self.presenters
