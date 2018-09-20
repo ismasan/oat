@@ -108,6 +108,9 @@ module Oat
     end
 
     def self.serialize(item, adapter: self.adapter, context: nil)
+      _, pr = presenters.find{|(type, p)| type === item}
+      pr = presenters[:default] unless pr
+      item = pr.new(item, context) if pr
       new(item, adapter: adapter, context: context).to_h
     end
 
@@ -208,7 +211,6 @@ module Oat
     end
 
     def invoke(item, field)
-      item = present(item)
       helper = field.meta_data[:helper]
       if helper
         if respond_to?(helper)
@@ -223,17 +225,6 @@ module Oat
         return item.public_send(method_name)
       else
         raise NoMethodError, "#{self.class.name} expects #{item.inspect} to respond to ##{method_name}"
-      end
-    end
-
-    def present(item)
-      _, pr = self.class.presenters.find{|(type, p)| type === item}
-      pr = self.class.presenters[:default] unless pr
-
-      if pr
-        pr.new(item, context)
-      else
-        item
       end
     end
   end
