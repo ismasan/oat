@@ -365,4 +365,10 @@ RSpec.describe Oat do
       user_serializer.serialize(user)
     }.to raise_error Oat::NoMethodError
   end
+
+  # inheriting presenters
+  # specific exception on schema errors
+  # conditional groups, to include/exclude groups of properties/links/entities depending on state or conditions
+  # impl. another adapter to test internal APIs.
+  # schemas with adapter? ie. generate JSON schema with example values and HAL structure.
 end
