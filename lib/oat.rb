@@ -1,6 +1,6 @@
 require "oat/version"
+require "oat/serializer"
 
 module Oat
-  require 'oat/serializer'
-  require 'oat/adapter'
+  # Your code goes here...
 end
