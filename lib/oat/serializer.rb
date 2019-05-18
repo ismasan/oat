@@ -151,11 +151,22 @@ module Oat
     def self.present(presenter = nil, type: :default, &block)
       if !presenter && !block_given?
         raise "Serializer.present expects either a block or a presenter class"
-      elsif block_given?
-        pr = Class.new(DefaultPresenter, &block)
-        presenters[type] = pr
-      else
-        presenters[type] = presenter
+      end
+
+      if block_given?
+        presenter = if parent = presenters[type] # subclass
+          Class.new(parent, &block)
+        else
+          Class.new(DefaultPresenter, &block)
+        end
+      end
+
+      presenters[type] = presenter
+    end
+
+    def self.inherited(subclass)
+      presenters.each do |key, pr|
+        subclass.present(pr, type: key)
       end
     end
 

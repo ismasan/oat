@@ -304,6 +304,41 @@ RSpec.describe Oat do
       result = user_serializer.serialize(user_klass2.new("Joan"), context: {title: 'Mrs.'})
       expect(result[:name]).to eq 'Custom: Mrs. Joan'
     end
+
+    it 'inherits presenters' do
+      user_klass = Struct.new(:name, :age)
+
+      user_serializer = Class.new(Oat::Serializer) do
+        schema do
+          property :name
+        end
+
+        present do
+          def name
+            "Mr. #{item.name}"
+          end
+        end
+      end
+
+      child_serializer = Class.new(user_serializer) do
+        schema do
+          property :name
+          property :age
+        end
+
+        # child defines own presenter too
+        present do
+          def age
+            "#{item.age} years old"
+          end
+        end
+      end
+      result = child_serializer.serialize(user_klass.new("Joe", 50))
+      expect(result[:name]).to eq 'Mr. Joe'
+      expect(result[:age]).to eq '50 years old'
+    end
+
+    it 'inherits schemas'
   end
 
   context "generating example outputs" do
@@ -367,6 +402,7 @@ RSpec.describe Oat do
   end
 
   # inheriting presenters
+  # inheriting schemas
   # specific exception on schema errors
   # conditional groups, to include/exclude groups of properties/links/entities depending on state or conditions
   # impl. another adapter to test internal APIs.
