@@ -38,6 +38,10 @@ module Fixtures
             entities [:friends, 'http://example.org/rels/person'], item.friends, klass, :message => "Merged into parent's context"
           end
 
+          if adapter.respond_to?(:title)
+            title 'This guy'
+          end
+
           if adapter.respond_to?(:action)
             action :close_account do |action|
               action.href "http://foo.bar.com/#{item.id}/close_account"
