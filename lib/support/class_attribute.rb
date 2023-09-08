@@ -24,8 +24,6 @@ module Oat
       end
     end
 
-    private
-
     def singleton_class
       class << self
         self
