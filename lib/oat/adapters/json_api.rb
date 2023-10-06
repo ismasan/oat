@@ -150,6 +150,8 @@ module Oat
       PLURAL = /s$/
 
       def pluralize(str)
+        return str.pluralize if str.respond_to?(:pluralize)
+        
         if str =~ PLURAL
           str
         else
