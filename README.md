@@ -126,6 +126,19 @@ You can add meta-information about your JSON document via `meta :property, "valu
 
 ## Adapters
 
+At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specification.html), [Siren](https://github.com/kevinswiber/siren) and [JsonAPI](http://jsonapi.org/), but it's easy to write your own.
+
+Note: Oat adapters are not *required* by default. Your code should explicitly require the ones it needs:
+
+```ruby
+# HAL
+require 'oat/adapters/hal'
+# Siren
+require 'oat/adapters/siren'
+# JsonAPI
+require 'oat/adapters/json_api'
+```
+
 Using the included [HAL](http://stateless.co/hal_specification.html) adapter, the `ProductSerializer` above would render the following JSON:
 
 ```json
@@ -159,18 +172,6 @@ adapter Oat::Adapters::Siren
         "description": "..."
     }
 }
-```
-At the moment Oat ships with adapters for [HAL](http://stateless.co/hal_specification.html), [Siren](https://github.com/kevinswiber/siren) and [JsonAPI](http://jsonapi.org/), but it's easy to write your own.
-
-Note: Oat adapters are not *required* by default. Your code should explicitly require the ones it needs:
-
-```ruby
-# HAL
-require 'oat/adapters/hal'
-# Siren
-require 'oat/adapters/siren'
-# JsonAPI
-require 'oat/adapters/json_api'
 ```
 
 ## Switching adapters dynamically
@@ -675,7 +676,7 @@ Or install it yourself as:
 ## TODO / contributions welcome
 
 * JsonAPI top-level meta
-* testing module that can be used for testing spec-compliance in user apps?
+* Testing module that can be used for testing spec-compliance in user apps?
 
 ## Contributing
 
